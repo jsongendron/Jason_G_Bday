@@ -575,10 +575,11 @@
         /* ══ SPARKLE OVERLAY ════════════════════════════════════════ */
 
         #sparkle-overlay {
-            position: absolute;
+            position: fixed;
             inset: 0;
-            z-index: 100;
+            z-index: 9000;
             pointer-events: none;
+            background: var(--screen-bg);
         }
 
         #sparkle-canvas {
@@ -817,9 +818,8 @@ function downloadICS() {
     var rafId = null;
 
     function init() {
-        var ov = document.getElementById('sparkle-overlay');
-        COLS = Math.ceil((ov.offsetWidth  || window.innerWidth)  / CELL) + 1;
-        ROWS = Math.ceil((ov.offsetHeight || window.innerHeight) / CELL) + 1;
+        COLS = Math.ceil(window.innerWidth  / CELL) + 1;
+        ROWS = Math.ceil(window.innerHeight / CELL) + 1;
         sc.width  = COLS * CELL - GAP;
         sc.height = ROWS * CELL - GAP;
         buf = new Float32Array(COLS * ROWS * 4);
