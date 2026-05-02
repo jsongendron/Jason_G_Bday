@@ -104,7 +104,12 @@
             transition: opacity 1s ease-out;
         }
 
-        #pixel-selfie.visible { opacity: 0.4; }
+        @keyframes selfie-rock {
+            0%, 100% { transform: translateX(-50%) rotate(15deg); }
+            50%       { transform: translateX(-50%) rotate(-15deg); }
+        }
+
+        #pixel-selfie.visible { opacity: 0.4; animation: selfie-rock 1s ease-in-out infinite; }
 
         .boot-logo {
             font-family: var(--pixel-font);
@@ -649,7 +654,12 @@
                 pointer-events: auto;
                 display: block;
             }
-            #pixel-selfie.visible { opacity: 1; }
+            @keyframes selfie-rock-mobile {
+                0%, 100% { transform: rotate(15deg); }
+                50%       { transform: rotate(-15deg); }
+            }
+
+            #pixel-selfie.visible { opacity: 1; animation: selfie-rock-mobile 1s ease-in-out infinite; }
         }
     </style>
 </head>
