@@ -614,7 +614,7 @@
                     <span class="info-icon"><svg viewBox="150 100 1570 1680" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" overflow="hidden"><g transform="translate(-1461 34)"><g><g><g><path fill="#C8A84B" d="M1086.25 144.833 1231.08 144.833 1231.08 289.667 1520.75 289.667 1520.75 1593.17 217.25 1593.17 217.25 289.667 506.917 289.667 506.917 144.833 651.75 144.833 651.75 289.667 1086.25 289.667 1086.25 144.833ZM651.75 434.5 362.083 434.5 362.083 579.333 1375.92 579.333 1375.92 434.5 651.75 434.5ZM362.083 724.167 362.083 1448.33 1375.92 1448.33 1375.92 724.167 362.083 724.167ZM506.917 869 651.75 869 651.75 1013.83 506.917 1013.83 506.917 869ZM941.417 869 796.583 869 796.583 1013.83 941.417 1013.83 941.417 869ZM1086.25 869 1231.08 869 1231.08 1013.83 1086.25 1013.83 1086.25 869ZM651.75 1158.67 506.917 1158.67 506.917 1303.5 651.75 1303.5 651.75 1158.67ZM796.583 1158.67 941.417 1158.67 941.417 1303.5 796.583 1303.5 796.583 1158.67ZM1231.08 1158.67 1086.25 1158.67 1086.25 1303.5 1231.08 1303.5 1231.08 1158.67Z" transform="matrix(1.00058 0 0 1 1461 -34)"/></g></g></g><rect x="2837" y="1559" width="146" height="147" fill="#C8A84B"/><rect x="2837" y="1126" width="150" height="147" fill="#0A140D"/><rect x="2548" y="1413" width="146" height="148" fill="#0A140D"/><rect x="2982" y="1413" width="146" height="147" fill="#C8A84B"/><rect x="2544" y="1122" width="150" height="149" fill="#0A140D"/></g></svg></span>
                     <span class="info-label">SYNC</span>
                     <span class="info-sep">:</span>
-                    <span class="info-desc">Save the date &nbsp;<a class="cal-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Jason%27s+40th+Birthday&dates=20260627T180000%2F20260628T000000&details=Jason+turns+40%21+RSVP+for+location+details.&location=Carlton%2C+Melbourne" target="_blank">[ ADD TO CALENDAR ]</a></span>
+                    <span class="info-desc">Save the date &nbsp;<a class="cal-link" href="#" onclick="downloadICS();return false;">[ ADD TO CALENDAR ]</a></span>
                 </div>
             </div>
             <div class="term-comment">
@@ -678,6 +678,32 @@
     setTimeout(function() {
         document.getElementById('boot').classList.add('gone');
     }, 3900);
+</script>
+
+<script>
+function downloadICS() {
+  var ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Jason G 40th//EN',
+    'BEGIN:VEVENT',
+    'DTSTART;TZID=Australia/Melbourne:20260627T180000',
+    'DTEND;TZID=Australia/Melbourne:20260628T000000',
+    'SUMMARY:Jason\'s 40th Birthday',
+    'DESCRIPTION:Jason turns 40! Reply to RSVP — address sent on confirmation.',
+    'LOCATION:Carlton\\, Melbourne',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'jason-40th.ics';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 </script>
 
 </body>
