@@ -611,8 +611,8 @@
         /* ══ RESPONSIVE ═════════════════════════════════════════════ */
 
         @media (max-width: 640px) {
-            .screen          { margin: 0; border-radius: 0; min-height: 100dvh; display: flex; flex-direction: column; }
-            .cover           { min-height: auto; padding: 24px; flex: 1; display: flex; flex-direction: column; }
+            .screen          { margin: 0; border-radius: 0; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+            .cover           { min-height: auto; padding: 24px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
             .info-lines      { margin-top: auto; }
             .hero            { font-size: 48px; }
             .cursor          { width: 20px; height: 28px; }
@@ -627,6 +627,15 @@
             .rsvp-box        { padding: 20px; }
             .footer          { padding-left: 24px; padding-right: 24px; }
 
+            .selfie-wrap {
+                flex: 1;
+                min-height: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+
             #pixel-selfie {
                 position: static;
                 transform: none;
@@ -635,12 +644,10 @@
                 height: auto;
                 width: auto;
                 max-width: 100%;
-                max-height: 35vh;
-                flex: 1;
-                align-self: center;
-                min-height: 0;
+                max-height: 100%;
                 z-index: auto;
                 pointer-events: auto;
+                display: block;
             }
             #pixel-selfie.visible { opacity: 1; }
         }
@@ -683,7 +690,9 @@
         <div class="hero">YOU'RE<br>INVITED<span class="cursor"></span></div>
 
         <!-- PIXEL SELFIE — flex item on mobile, fixed overlay on desktop -->
-        <img id="pixel-selfie" src="Pixel%20selfie.svg" alt="">
+        <div class="selfie-wrap">
+            <img id="pixel-selfie" src="Pixel%20selfie.svg" alt="">
+        </div>
 
         <div class="info-lines">
             <div class="info-line">
