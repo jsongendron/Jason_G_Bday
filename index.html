@@ -235,14 +235,14 @@
             background: #0A140D;
             border: 4px solid var(--forest);
             box-shadow: 4px 4px 0 var(--deep-canopy);
-            padding: 22px 12px 18px;
+            padding: 12px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            min-height: 114px;
+            gap: 14px;
+            aspect-ratio: 1 / 1;
             position: relative;
             transition: border-color 0.1s, box-shadow 0.1s, background 0.1s;
             -webkit-tap-highlight-color: transparent;
@@ -276,23 +276,22 @@
         }
 
         .tile-icon {
-            font-size: 24px;
+            font-size: 44px;
             color: var(--harvest-gold);
             text-shadow: 0 0 12px rgba(200,168,75,0.5);
             line-height: 1;
         }
 
-        .tile-icon img {
-            width: 24px;
-            height: 24px;
+        .tile-icon svg {
+            width: 48px;
+            height: 48px;
             display: block;
-            image-rendering: pixelated;
             filter: drop-shadow(0 0 4px rgba(200,168,75,0.5));
         }
 
         .tile-label {
             font-family: var(--pixel-font);
-            font-size: 7px;
+            font-size: 10px;
             color: var(--meadow);
             letter-spacing: 1px;
             text-align: center;
@@ -470,9 +469,10 @@
             .divider         { padding-left: 24px; padding-right: 24px; }
             .tile-grid-wrap  { padding-left: 20px; padding-right: 20px; }
             .tile-grid       { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .tile            { min-height: 96px; padding: 18px 10px 14px; }
-            .tile-icon       { font-size: 20px; }
-            .tile-icon img   { width: 20px; height: 20px; }
+            .tile            { padding: 8px; gap: 10px; }
+            .tile-icon       { font-size: 32px; }
+            .tile-icon svg   { width: 36px; height: 36px; }
+            .tile-label      { font-size: 8px; }
             .rsvp-wrap       { padding-left: 24px; padding-right: 24px; }
             .rsvp-box        { padding: 20px; }
             .footer          { padding-left: 24px; padding-right: 24px; }
@@ -510,33 +510,33 @@
         <div class="tile-grid">
 
             <div class="tile" data-tile="when">
-                <div class="tile-icon"><img src="icons/clock.svg" alt="WHEN"></div>
+                <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#C8A84B" d="M19 3H5v2H3v14h2v2h14v-2h2V5h-2zm0 2v14H5V5zm-8 2h2v6h4v2h-6z"/></svg></div>
                 <div class="tile-label">WHEN</div>
             </div>
 
             <div class="tile" data-tile="sector">
-                <div class="tile-icon"><img src="icons/pin.svg" alt="SECTOR"></div>
+                <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#C8A84B" d="M7 2h10v2H7zM5 6V4h2v2zm0 8H3V6h2zm2 2H5v-2h2zm2 2H7v-2h2zm2 2H9v-2h2zm2 0v2h-2v-2zm2-2v2h-2v-2zm2-2v2h-2v-2zm2-2v2h-2v-2zm0-8h2v8h-2zm0 0V4h-2v2zm-5 2h-4v4h4z"/></svg></div>
                 <div class="tile-label">SECTOR</div>
-            </div>
-
-            <div class="tile" data-tile="hp">
-                <div class="tile-icon"><img src="icons/rice-svgrepo-com.svg" alt="HP"></div>
-                <div class="tile-label">HP</div>
-            </div>
-
-            <div class="tile" data-tile="mp">
-                <div class="tile-icon"><img src="icons/cocktail.svg" alt="MP"></div>
-                <div class="tile-label">MP</div>
-            </div>
-
-            <div class="tile" data-tile="skin">
-                <div class="tile-icon"><img src="icons/t-shirt-svgrepo-com.svg" alt="SKIN"></div>
-                <div class="tile-label">SKIN</div>
             </div>
 
             <div class="tile" data-tile="sync">
                 <div class="tile-icon">▶</div>
                 <div class="tile-label">SYNC</div>
+            </div>
+
+            <div class="tile" data-tile="hp">
+                <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M8.6 717.1v98.3h154.7v98.2h92.2v98.3h516.1v-98.3h92.2v-98.2h154.7v-98.3z" fill="#7A5C18"/><path d="M538.7 13.1h100.5v100.5H538.7zM438.2 113.6h100.5v100.5H438.2zM538.7 214.1v100.6H438.2v100.5H589V314.7h118.2v100.5H855V314.7h-62.2V214.1h-90.5V113.6h-63.1v100.5zM590.3 416.2h150.8v100.5H590.3zM488.4 516.7v100.5H387.9v100.5h175.9V617.2h75.4V516.7zM941.2 516.7V416.2H855v100.5H741.1v100.5H639.2v100.5h258.9V617.2h82.6V516.7zM337.6 416.2h150.8v100.5H337.6zM237.1 516.7v100.5H136.6v100.5h175.9V617.2h75.4V516.7zM337.6 214.1h100.5v100.5H337.6zM237.1 314.7h100.5v100.5H237.1zM136.6 416.2h100.5v100.5H136.6zM36.1 516.7h100.5v100.5H36.1z" fill="#C8A84B"/></svg></div>
+                <div class="tile-label">HP</div>
+            </div>
+
+            <div class="tile" data-tile="mp">
+                <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#C8A84B" d="M19 3H3v4h2v2h2v2h2v2h2v6H7v2h10v-2h-4v-6h2v-2h2V9h2V7h2V3zm0 4H5V5h14z"/></svg></div>
+                <div class="tile-label">MP</div>
+            </div>
+
+            <div class="tile" data-tile="skin">
+                <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M681 88.8v100.6h-67.6v84.3H410.8v-84.3h-67.6V88.8H63.8V335.4h139.7v599.4h617.2V335.4h139.7V88.8z" fill="#C8A84B"/></svg></div>
+                <div class="tile-label">SKIN</div>
             </div>
 
         </div>
