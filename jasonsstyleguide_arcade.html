@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRAND.EXE — Arcade Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+
+        :root {
+            --deep-canopy:   #1A2E22;
+            --forest:        #3D6E50;
+            --harvest-gold:  #C8A84B;
+            --parchment:     #F5F7F2;
+            --meadow:        #7CB542;
+            --terracotta:    #C0614A;
+            --lichen:        #9EA89A;
+            --pale-sage:     #D6DDD2;
+            --dusty-lavender: #EBE4F5;
+            --wildflower:    #7B5C9E;
+            --smoke-green:   #7A9080;
+
+            --screen-bg:     #060E08;
+            --pixel-font:    'Press Start 2P', monospace;
+            --mono:          'Courier New', Courier, monospace;
+        }
+
+        /* ── CRT screen body ─────────────────────────────────────── */
+        body {
+            font-family: var(--mono);
+            background: #000;
+            color: var(--parchment);
+            min-height: 100vh;
+        }
+
+        /* Scanline overlay on everything */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 3px,
+                rgba(0,0,0,0.18) 3px,
+                rgba(0,0,0,0.18) 4px
+            );
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        .screen {
+            background: var(--screen-bg);
+            max-width: 1100px;
+            margin: 30px auto;
+            border: 4px solid var(--forest);
+            box-shadow:
+                0 0 0 4px var(--screen-bg),
+                0 0 0 8px var(--harvest-gold),
+                0 0 0 12px var(--screen-bg),
+                0 0 40px var(--forest),
+                0 0 80px rgba(61,110,80,0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .container {
+            padding: 60px 40px;
+        }
+
+        /* ── Pixel border utility ────────────────────────────────── */
+        .pixel-box {
+            border: 4px solid var(--harvest-gold);
+            box-shadow:
+                inset 0 0 0 2px var(--screen-bg),
+                4px 4px 0 var(--deep-canopy);
+        }
+
+        .pixel-box-green {
+            border: 4px solid var(--forest);
+            box-shadow:
+                inset 0 0 0 2px var(--screen-bg),
+                4px 4px 0 var(--deep-canopy);
+        }
+
+        /* ── Section divider ─────────────────────────────────────── */
+        .pixel-divider {
+            font-family: var(--pixel-font);
+            font-size: 8px;
+            color: var(--forest);
+            letter-spacing: 4px;
+            text-align: center;
+            margin: 60px 0 40px;
+            opacity: 0.6;
+        }
+
+        /* ── Section ─────────────────────────────────────────────── */
+        .section {
+            margin-bottom: 80px;
+        }
+
+        .section-number {
+            font-family: var(--pixel-font);
+            font-size: 9px;
+            color: var(--harvest-gold);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            text-shadow: 0 0 8px var(--harvest-gold), 0 0 20px rgba(200,168,75,0.4);
+        }
+
+        .section-title {
+            font-family: var(--pixel-font);
+            font-size: 18px;
+            color: var(--parchment);
+            margin-bottom: 24px;
+            line-height: 1.6;
+            text-shadow: 0 0 12px rgba(245,247,242,0.3);
+        }
+
+        .section-description {
+            font-family: var(--mono);
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--lichen);
+            max-width: 700px;
+            margin-bottom: 40px;
+            border-left: 3px solid var(--forest);
+            padding-left: 16px;
+        }
+
+        /* ── Cover ───────────────────────────────────────────────── */
+        .cover {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px 40px;
+            position: relative;
+            background:
+                radial-gradient(ellipse at 50% 50%, rgba(61,110,80,0.08) 0%, transparent 70%),
+                var(--screen-bg);
+        }
+
+        .cover-hi-score {
+            font-family: var(--pixel-font);
+            font-size: 9px;
+            color: var(--lichen);
+            letter-spacing: 2px;
+            margin-bottom: 48px;
+            opacity: 0.7;
+        }
+
+        .cover-hi-score span {
+            color: var(--harvest-gold);
+            text-shadow: 0 0 8px var(--harvest-gold);
+        }
+
+        .cover-title {
+            font-family: var(--pixel-font);
+            font-size: 42px;
+            color: var(--harvest-gold);
+            line-height: 1.4;
+            margin-bottom: 24px;
+            text-shadow:
+                0 0 10px var(--harvest-gold),
+                0 0 30px rgba(200,168,75,0.5),
+                0 0 60px rgba(200,168,75,0.2);
+        }
+
+        .cover-title .cursor {
+            display: inline-block;
+            background: var(--harvest-gold);
+            width: 32px;
+            height: 36px;
+            vertical-align: bottom;
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+            box-shadow: 0 0 10px var(--harvest-gold);
+        }
+
+        .cover-subtitle {
+            font-family: var(--pixel-font);
+            font-size: 12px;
+            color: var(--meadow);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-shadow: 0 0 8px var(--meadow);
+        }
+
+        .cover-insert-coin {
+            font-family: var(--pixel-font);
+            font-size: 11px;
+            color: var(--harvest-gold);
+            animation: blink 1.2s step-end infinite;
+            text-shadow: 0 0 10px var(--harvest-gold);
+            margin-top: 48px;
+        }
+
+        .cover-version {
+            font-family: var(--pixel-font);
+            font-size: 8px;
+            color: var(--smoke-green);
+            margin-top: 16px;
+            letter-spacing: 2px;
+        }
+
+        /* Pixel sprite row */
+        .sprite-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .sprite {
+            display: block;
+            image-rendering: pixelated;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .sprite:nth-child(2) { animation-delay: 0.3s; }
+        .sprite:nth-child(3) { animation-delay: 0.6s; }
+        .sprite:nth-child(4) { animation-delay: 0.9s; }
+        .sprite:nth-child(5) { animation-delay: 1.2s; }
+
+        /* ── Animations ──────────────────────────────────────────── */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 8px var(--harvest-gold), 0 0 20px rgba(200,168,75,0.4); }
+            50% { text-shadow: 0 0 16px var(--harvest-gold), 0 0 40px rgba(200,168,75,0.7); }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ── Colour grid ─────────────────────────────────────────── */
+        .colour-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .colour-card {
+            background: #0A140D;
+            border: 4px solid var(--forest);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+            overflow: hidden;
+        }
+
+        .colour-swatch {
+            width: 100%;
+            height: 120px;
+            position: relative;
+        }
+
+        /* Pixel grid overlay on swatches */
+        .colour-swatch::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,0,0,0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.15) 1px, transparent 1px);
+            background-size: 8px 8px;
+        }
+
+        .colour-info {
+            padding: 20px;
+        }
+
+        .colour-name {
+            font-family: var(--pixel-font);
+            font-size: 9px;
+            color: var(--harvest-gold);
+            margin-bottom: 6px;
+            text-shadow: 0 0 6px rgba(200,168,75,0.5);
+            line-height: 1.6;
+        }
+
+        .colour-role {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--smoke-green);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .colour-values {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .colour-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--pixel-font);
+            font-size: 7px;
+            padding: 8px 10px;
+            background: #0D1A10;
+            border: 2px solid var(--deep-canopy);
+            cursor: pointer;
+            transition: border-color 0.1s, background 0.1s;
+            line-height: 1.8;
+        }
+
+        .colour-value:hover {
+            border-color: var(--harvest-gold);
+            background: #1A2E22;
+        }
+
+        .colour-value-label {
+            color: var(--smoke-green);
+        }
+
+        .colour-value-code {
+            color: var(--meadow);
+            text-shadow: 0 0 4px rgba(124,181,66,0.4);
+        }
+
+        .copy-hint {
+            font-family: var(--pixel-font);
+            font-size: 6px;
+            color: var(--smoke-green);
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0.6;
+            animation: blink 2s step-end infinite;
+        }
+
+        /* ── Gradient grid ───────────────────────────────────────── */
+        .gradient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .gradient-card {
+            background: #0A140D;
+            border: 4px solid var(--forest);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+            overflow: hidden;
+        }
+
+        .gradient-swatch {
+            width: 100%;
+            height: 160px;
+            position: relative;
+        }
+
+        .gradient-swatch::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,0,0,0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px);
+            background-size: 8px 8px;
+        }
+
+        .gradient-info {
+            padding: 20px;
+        }
+
+        .gradient-name {
+            font-family: var(--pixel-font);
+            font-size: 9px;
+            color: var(--harvest-gold);
+            margin-bottom: 8px;
+            line-height: 1.6;
+            text-shadow: 0 0 6px rgba(200,168,75,0.5);
+        }
+
+        .gradient-description {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--smoke-green);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .gradient-code {
+            font-family: var(--pixel-font);
+            font-size: 6px;
+            padding: 12px;
+            background: #0D1A10;
+            border: 2px solid var(--deep-canopy);
+            word-wrap: break-word;
+            cursor: pointer;
+            color: var(--meadow);
+            line-height: 2;
+            transition: border-color 0.1s;
+        }
+
+        .gradient-code:hover {
+            border-color: var(--harvest-gold);
+        }
+
+        /* ── Typography specimen ─────────────────────────────────── */
+        .type-specimen {
+            background: #0A140D;
+            border: 4px solid var(--forest);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .type-example {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #1A2E22;
+        }
+
+        .type-example:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .type-label {
+            font-family: var(--pixel-font);
+            font-size: 7px;
+            color: var(--harvest-gold);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 4px rgba(200,168,75,0.4);
+        }
+
+        .type-display  { font-size: 38px; font-weight: 700; font-family: var(--pixel-font); color: var(--parchment); line-height: 1.4; }
+        .type-h1       { font-size: 28px; font-weight: 700; font-family: var(--pixel-font); color: var(--parchment); line-height: 1.4; }
+        .type-h2       { font-size: 18px; font-weight: 600; font-family: var(--pixel-font); color: var(--parchment); line-height: 1.5; }
+        .type-h3       { font-size: 12px; font-weight: 600; font-family: var(--pixel-font); color: var(--parchment); line-height: 1.6; }
+        .type-body     { font-size: 15px; font-family: var(--mono); color: var(--parchment); line-height: 1.8; }
+        .type-small    { font-size: 12px; font-family: var(--mono); color: var(--parchment); }
+        .type-caption  { font-size: 9px;  font-family: var(--pixel-font); color: var(--lichen); letter-spacing: 2px; }
+
+        .type-meta {
+            font-family: var(--pixel-font);
+            font-size: 6px;
+            color: var(--smoke-green);
+            margin-top: 8px;
+            opacity: 0.7;
+        }
+
+        /* ── Usage grid ──────────────────────────────────────────── */
+        .usage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .usage-card {
+            background: #0A140D;
+            border: 4px solid var(--forest);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+            padding: 28px;
+        }
+
+        .usage-title {
+            font-family: var(--pixel-font);
+            font-size: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .do-card {
+            border-color: var(--meadow);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+        }
+
+        .do-card .usage-title {
+            color: var(--meadow);
+            text-shadow: 0 0 8px rgba(124,181,66,0.5);
+        }
+
+        .dont-card {
+            border-color: var(--terracotta);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+        }
+
+        .dont-card .usage-title {
+            color: var(--terracotta);
+            text-shadow: 0 0 8px rgba(192,97,74,0.5);
+        }
+
+        .usage-list {
+            list-style: none;
+        }
+
+        .usage-list li {
+            font-family: var(--mono);
+            font-size: 13px;
+            line-height: 1.8;
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 8px;
+            color: var(--parchment);
+        }
+
+        .do-card .usage-list li::before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            font-size: 10px;
+            color: var(--meadow);
+        }
+
+        .dont-card .usage-list li::before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            font-size: 10px;
+            color: var(--terracotta);
+        }
+
+        /* ── Spacing grid ────────────────────────────────────────── */
+        .spacing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .spacing-item {
+            background: #0A140D;
+            border: 4px solid var(--forest);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .spacing-visual {
+            background: var(--forest);
+            margin: 0 auto 12px;
+            box-shadow: 0 0 6px rgba(61,110,80,0.6);
+        }
+
+        .spacing-label {
+            font-family: var(--pixel-font);
+            font-size: 8px;
+            color: var(--harvest-gold);
+            margin-bottom: 6px;
+            text-shadow: 0 0 4px rgba(200,168,75,0.4);
+        }
+
+        .spacing-value {
+            font-family: var(--pixel-font);
+            font-size: 7px;
+            color: var(--smoke-green);
+        }
+
+        /* ── Code / JSON block ───────────────────────────────────── */
+        .code-block {
+            font-family: var(--pixel-font);
+            font-size: 7px;
+            background: #0D1A10;
+            border: 2px solid var(--deep-canopy);
+            padding: 20px;
+            overflow-x: auto;
+            cursor: pointer;
+            color: var(--meadow);
+            line-height: 2.2;
+            word-wrap: break-word;
+            transition: border-color 0.1s;
+        }
+
+        .code-block:hover {
+            border-color: var(--harvest-gold);
+        }
+
+        .card {
+            background: #0A140D;
+            border: 4px solid var(--forest);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-family: var(--pixel-font);
+            font-size: 9px;
+            color: var(--parchment);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        /* ── Footer ──────────────────────────────────────────────── */
+        .footer {
+            margin-top: 80px;
+            padding: 32px 40px;
+            border-top: 4px solid var(--deep-canopy);
+            text-align: center;
+            font-family: var(--pixel-font);
+            font-size: 8px;
+            color: var(--smoke-green);
+            letter-spacing: 2px;
+            background: #040A05;
+        }
+
+        .footer span {
+            color: var(--harvest-gold);
+            text-shadow: 0 0 6px var(--harvest-gold);
+        }
+
+        /* ── Grass waving animation ─────────────────────────────── */
+        @keyframes sway-a {
+            0%, 100% { transform: rotate(0deg); }
+            35%      { transform: rotate(-8deg); }
+            65%      { transform: rotate(5deg); }
+        }
+        @keyframes sway-b {
+            0%, 100% { transform: rotate(3deg); }
+            45%      { transform: rotate(-7deg); }
+        }
+        @keyframes sway-c {
+            0%, 100% { transform: rotate(-2deg); }
+            55%      { transform: rotate(7deg); }
+        }
+        .blade {
+            transform-box: fill-box;
+            transform-origin: 50% 100%;
+        }
+        .blade.sa { animation: sway-a 3.2s ease-in-out infinite; }
+        .blade.sb { animation: sway-b 2.8s ease-in-out infinite; }
+        .blade.sc { animation: sway-c 3.6s ease-in-out infinite; }
+        .blade.d2 { animation-delay: 0.6s; }
+        .blade.d3 { animation-delay: 1.1s; }
+
+        /* ── Responsive ──────────────────────────────────────────── */
+        @media (max-width: 700px) {
+            .cover-title { font-size: 22px; }
+            .usage-grid  { grid-template-columns: 1fr; }
+            .screen      { margin: 0; border-radius: 0; }
+            .container   { padding: 32px 20px; }
+            .cover       { padding: 32px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="screen">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         COVER
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="cover">
+        <div class="cover-hi-score">HI-SCORE &nbsp;<span>019,850</span></div>
+        <div class="cover-title">BRAND<br>.EXE<span class="cursor"></span></div>
+        <div class="cover-subtitle">A CONCEPT BY JASON GENDRON</div>
+        <div class="cover-version">2026 · VERSION 1 · JAPES EDITION</div>
+        <div class="cover-insert-coin">▶ INSERT COIN TO CONTINUE ◀</div>
+        <div class="sprite-row">
+            <!-- Leaf sprite -->
+            <svg class="sprite" width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <rect x="24" y="4"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="28" y="4"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="20" y="8"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="24" y="8"  width="4" height="4" fill="#7CB542"/>
+                <rect x="28" y="8"  width="4" height="4" fill="#7CB542"/>
+                <rect x="32" y="8"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="12" width="4" height="4" fill="#3D6E50"/>
+                <rect x="20" y="12" width="4" height="4" fill="#7CB542"/>
+                <rect x="24" y="12" width="4" height="4" fill="#7CB542"/>
+                <rect x="28" y="12" width="4" height="4" fill="#7CB542"/>
+                <rect x="32" y="12" width="4" height="4" fill="#3D6E50"/>
+                <rect x="36" y="12" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="16" width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="16" width="4" height="4" fill="#7CB542"/>
+                <rect x="20" y="16" width="4" height="4" fill="#7CB542"/>
+                <rect x="24" y="16" width="4" height="4" fill="#7CB542"/>
+                <rect x="28" y="16" width="4" height="4" fill="#3D6E50"/>
+                <rect x="32" y="16" width="4" height="4" fill="#3D6E50"/>
+                <rect x="8"  y="20" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="20" width="4" height="4" fill="#7CB542"/>
+                <rect x="16" y="20" width="4" height="4" fill="#7CB542"/>
+                <rect x="20" y="20" width="4" height="4" fill="#7CB542"/>
+                <rect x="24" y="20" width="4" height="4" fill="#3D6E50"/>
+                <rect x="28" y="20" width="4" height="4" fill="#3D6E50"/>
+                <rect x="8"  y="24" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="24" width="4" height="4" fill="#7CB542"/>
+                <rect x="16" y="24" width="4" height="4" fill="#7CB542"/>
+                <rect x="20" y="24" width="4" height="4" fill="#3D6E50"/>
+                <rect x="24" y="24" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="28" width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="28" width="4" height="4" fill="#3D6E50"/>
+                <rect x="20" y="28" width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="32" width="4" height="4" fill="#1A2E22"/>
+                <rect x="16" y="36" width="4" height="4" fill="#1A2E22"/>
+                <rect x="16" y="40" width="4" height="4" fill="#1A2E22"/>
+            </svg>
+            <!-- Pixel square sprite -->
+            <svg class="sprite" width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4"  y="4"  width="36" height="36" fill="#3D6E50"/>
+                <rect x="8"  y="8"  width="28" height="28" fill="#7CB542"/>
+                <rect x="8"  y="8"  width="4"  height="4"  fill="#9EA89A"/>
+                <rect x="8"  y="40" width="36" height="4"  fill="#1A2E22"/>
+                <rect x="40" y="8"  width="4"  height="36" fill="#1A2E22"/>
+            </svg>
+            <!-- Wheat sprite -->
+            <svg class="sprite" width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <rect x="16" y="0"  width="4" height="4" fill="#C8A84B"/>
+                <rect x="12" y="4"  width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="4"  width="4" height="4" fill="#C8A84B"/>
+                <rect x="20" y="4"  width="4" height="4" fill="#C8A84B"/>
+                <rect x="8"  y="8"  width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="8"  width="4" height="4" fill="#C8A84B"/>
+                <rect x="24" y="8"  width="4" height="4" fill="#C8A84B"/>
+                <rect x="8"  y="12" width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="12" width="4" height="4" fill="#C8A84B"/>
+                <rect x="24" y="12" width="4" height="4" fill="#C8A84B"/>
+                <rect x="8"  y="16" width="4" height="4" fill="#C8A84B"/>
+                <rect x="12" y="16" width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="16" width="4" height="4" fill="#C8A84B"/>
+                <rect x="20" y="16" width="4" height="4" fill="#C8A84B"/>
+                <rect x="24" y="16" width="4" height="4" fill="#C8A84B"/>
+                <rect x="12" y="20" width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="20" width="4" height="4" fill="#C8A84B"/>
+                <rect x="20" y="20" width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="24" width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="28" width="4" height="4" fill="#C8A84B"/>
+                <rect x="16" y="32" width="4" height="4" fill="#1A2E22"/>
+                <rect x="16" y="36" width="4" height="4" fill="#1A2E22"/>
+                <rect x="16" y="40" width="4" height="4" fill="#1A2E22"/>
+            </svg>
+            <!-- Pixel square sprite (repeat) -->
+            <svg class="sprite" width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4"  y="4"  width="36" height="36" fill="#3D6E50"/>
+                <rect x="8"  y="8"  width="28" height="28" fill="#7CB542"/>
+                <rect x="8"  y="8"  width="4"  height="4"  fill="#9EA89A"/>
+                <rect x="8"  y="40" width="36" height="4"  fill="#1A2E22"/>
+                <rect x="40" y="8"  width="4"  height="36" fill="#1A2E22"/>
+            </svg>
+            <!-- Leaf sprite (repeat) -->
+            <svg class="sprite" width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <rect x="24" y="4"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="28" y="4"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="20" y="8"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="24" y="8"  width="4" height="4" fill="#7CB542"/>
+                <rect x="28" y="8"  width="4" height="4" fill="#7CB542"/>
+                <rect x="32" y="8"  width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="12" width="4" height="4" fill="#3D6E50"/>
+                <rect x="20" y="12" width="4" height="4" fill="#7CB542"/>
+                <rect x="24" y="12" width="4" height="4" fill="#7CB542"/>
+                <rect x="28" y="12" width="4" height="4" fill="#7CB542"/>
+                <rect x="32" y="12" width="4" height="4" fill="#3D6E50"/>
+                <rect x="36" y="12" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="16" width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="16" width="4" height="4" fill="#7CB542"/>
+                <rect x="20" y="16" width="4" height="4" fill="#7CB542"/>
+                <rect x="24" y="16" width="4" height="4" fill="#7CB542"/>
+                <rect x="28" y="16" width="4" height="4" fill="#3D6E50"/>
+                <rect x="32" y="16" width="4" height="4" fill="#3D6E50"/>
+                <rect x="8"  y="20" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="20" width="4" height="4" fill="#7CB542"/>
+                <rect x="16" y="20" width="4" height="4" fill="#7CB542"/>
+                <rect x="20" y="20" width="4" height="4" fill="#7CB542"/>
+                <rect x="24" y="20" width="4" height="4" fill="#3D6E50"/>
+                <rect x="28" y="20" width="4" height="4" fill="#3D6E50"/>
+                <rect x="8"  y="24" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="24" width="4" height="4" fill="#7CB542"/>
+                <rect x="16" y="24" width="4" height="4" fill="#7CB542"/>
+                <rect x="20" y="24" width="4" height="4" fill="#3D6E50"/>
+                <rect x="24" y="24" width="4" height="4" fill="#3D6E50"/>
+                <rect x="12" y="28" width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="28" width="4" height="4" fill="#3D6E50"/>
+                <rect x="20" y="28" width="4" height="4" fill="#3D6E50"/>
+                <rect x="16" y="32" width="4" height="4" fill="#1A2E22"/>
+                <rect x="16" y="36" width="4" height="4" fill="#1A2E22"/>
+                <rect x="16" y="40" width="4" height="4" fill="#1A2E22"/>
+            </svg>
+        </div>
+
+        <!-- ── Pixel grass scene ─────────────────────────────────── -->
+        <svg width="288" height="560" viewBox="0 0 288 560"
+             xmlns="http://www.w3.org/2000/svg"
+             style="position:absolute;right:60px;bottom:0;pointer-events:none;image-rendering:pixelated;z-index:1;">
+
+            <!-- Ground body -->
+            <rect x="0"   y="488" width="288" height="72"  fill="#1A2E22"/>
+            <!-- Ground surface -->
+            <rect x="0"   y="480" width="288" height="8"   fill="#3D6E50"/>
+            <!-- Soil flecks -->
+            <rect x="16"  y="498" width="8"   height="8"   fill="#3D6E50"/>
+            <rect x="80"  y="506" width="8"   height="8"   fill="#3D6E50"/>
+            <rect x="152" y="498" width="8"   height="8"   fill="#3D6E50"/>
+            <rect x="216" y="514" width="8"   height="8"   fill="#3D6E50"/>
+            <rect x="264" y="498" width="8"   height="8"   fill="#3D6E50"/>
+
+            <!-- BLADE 1: tallest (50 rows=400px), leans right, x=138 -->
+            <g class="blade sa">
+                <rect x="138" y="448" width="8" height="32" fill="#7CB542"/>
+                <rect x="146" y="448" width="8" height="32" fill="#3D6E50"/>
+                <rect x="138" y="384" width="8" height="64" fill="#7CB542"/>
+                <rect x="146" y="336" width="8" height="48" fill="#7CB542"/>
+                <rect x="154" y="336" width="8" height="48" fill="#3D6E50"/>
+                <rect x="154" y="288" width="8" height="48" fill="#7CB542"/>
+                <rect x="162" y="288" width="8" height="48" fill="#3D6E50"/>
+                <rect x="162" y="240" width="8" height="48" fill="#7CB542"/>
+                <rect x="170" y="240" width="8" height="48" fill="#3D6E50"/>
+                <rect x="170" y="192" width="8" height="48" fill="#7CB542"/>
+                <rect x="178" y="192" width="8" height="48" fill="#3D6E50"/>
+                <rect x="178" y="144" width="8" height="48" fill="#7CB542"/>
+                <rect x="186" y="144" width="8" height="48" fill="#3D6E50"/>
+                <rect x="186" y="96"  width="8" height="48" fill="#3D6E50"/>
+                <rect x="194" y="80"  width="8" height="16" fill="#1A2E22"/>
+            </g>
+
+            <!-- BLADE 2: second tallest (42 rows=336px), leans left, x=84 -->
+            <g class="blade sb d2">
+                <rect x="84"  y="432" width="8" height="48" fill="#7CB542"/>
+                <rect x="92"  y="432" width="8" height="48" fill="#3D6E50"/>
+                <rect x="84"  y="384" width="8" height="48" fill="#7CB542"/>
+                <rect x="76"  y="336" width="8" height="48" fill="#7CB542"/>
+                <rect x="68"  y="288" width="8" height="48" fill="#7CB542"/>
+                <rect x="60"  y="240" width="8" height="48" fill="#7CB542"/>
+                <rect x="52"  y="192" width="8" height="48" fill="#3D6E50"/>
+                <rect x="44"  y="144" width="8" height="48" fill="#3D6E50"/>
+                <rect x="36"  y="128" width="8" height="16" fill="#1A2E22"/>
+            </g>
+
+            <!-- BLADE 3: medium (32 rows=256px), leans right, x=174 -->
+            <g class="blade sc">
+                <rect x="174" y="432" width="8" height="48" fill="#7CB542"/>
+                <rect x="182" y="432" width="8" height="48" fill="#3D6E50"/>
+                <rect x="182" y="384" width="8" height="48" fill="#7CB542"/>
+                <rect x="190" y="384" width="8" height="48" fill="#3D6E50"/>
+                <rect x="190" y="336" width="8" height="48" fill="#7CB542"/>
+                <rect x="198" y="336" width="8" height="48" fill="#3D6E50"/>
+                <rect x="198" y="288" width="8" height="48" fill="#7CB542"/>
+                <rect x="206" y="288" width="8" height="48" fill="#3D6E50"/>
+                <rect x="206" y="240" width="8" height="48" fill="#3D6E50"/>
+                <rect x="214" y="224" width="8" height="16" fill="#1A2E22"/>
+            </g>
+
+            <!-- BLADE 4: short bg (20 rows=160px), dark, leans right, x=48 -->
+            <g class="blade sa d3">
+                <rect x="48"  y="432" width="8" height="48" fill="#3D6E50"/>
+                <rect x="56"  y="432" width="8" height="48" fill="#1A2E22"/>
+                <rect x="56"  y="384" width="8" height="48" fill="#3D6E50"/>
+                <rect x="64"  y="336" width="8" height="48" fill="#3D6E50"/>
+                <rect x="72"  y="320" width="8" height="16" fill="#1A2E22"/>
+            </g>
+
+            <!-- BLADE 5: shorter (22 rows=176px), meadow, leans left, x=228 -->
+            <g class="blade sb">
+                <rect x="220" y="432" width="8" height="48" fill="#3D6E50"/>
+                <rect x="228" y="432" width="8" height="48" fill="#7CB542"/>
+                <rect x="220" y="384" width="8" height="48" fill="#7CB542"/>
+                <rect x="212" y="336" width="8" height="48" fill="#3D6E50"/>
+                <rect x="204" y="304" width="8" height="32" fill="#1A2E22"/>
+            </g>
+
+            <!-- BLADE 6: tiny left tuft (10 rows=80px), x=12 -->
+            <g class="blade sc d3">
+                <rect x="12"  y="416" width="8" height="64" fill="#3D6E50"/>
+                <rect x="20"  y="400" width="8" height="16" fill="#1A2E22"/>
+            </g>
+
+            <!-- BLADE 7: right tuft (15 rows=120px), x=258 -->
+            <g class="blade sc d2">
+                <rect x="258" y="432" width="8" height="48" fill="#7CB542"/>
+                <rect x="266" y="392" width="8" height="40" fill="#3D6E50"/>
+                <rect x="274" y="360" width="8" height="32" fill="#1A2E22"/>
+            </g>
+
+        </svg>
+    </div>
+
+    <div class="container">
+
+        <!-- INTRO -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 00.</div>
+            <h2 class="section-title">INTRODUCTION.</h2>
+            <p class="section-description">
+                This style guide defines the visual language for data visualisation and reporting.
+                The palette is grounded in nature — deep forest greens, worn sage, the gold of a dry field in late afternoon.
+                Colour is used deliberately and sparingly. The data insight, not the design, is the hero.
+            </p>
+        </div>
+
+        <!-- CORE COLOURS -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 01.</div>
+            <h2 class="section-title">CORE COLOURS.</h2>
+            <p class="section-description">
+                The core palette consists of five colours. These form the foundation of all visual work.
+                Use them with discipline — most designs should use only two or three of these at once.
+            </p>
+
+            <div class="colour-grid">
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #1A2E22;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">DEEP CANOPY</div>
+                        <div class="colour-role">Primary / Text / Structure</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#1A2E22')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#1A2E22</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('26, 46, 34')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">26, 46, 34</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #3D6E50;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">FOREST</div>
+                        <div class="colour-role">Brand Green / Data / Emphasis</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#3D6E50')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#3D6E50</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('61, 110, 80')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">61, 110, 80</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #C8A84B;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">HARVEST GOLD</div>
+                        <div class="colour-role">Accent / Highlights</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#C8A84B')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#C8A84B</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('200, 168, 75')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">200, 168, 75</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #F5F7F2; border-bottom: 3px solid #D6DDD2;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">PARCHMENT</div>
+                        <div class="colour-role">Background / Canvas</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#F5F7F2')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#F5F7F2</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('245, 247, 242')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">245, 247, 242</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #EBE4F5; border-bottom: 3px solid #D6DDD2;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">DUSTY LAVENDER</div>
+                        <div class="colour-role">Subtle Backgrounds / Surface Tint</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#EBE4F5')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#EBE4F5</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('235, 228, 245')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">235, 228, 245</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNCTIONAL COLOURS -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 02.</div>
+            <h2 class="section-title">FUNCTIONAL COLOURS.</h2>
+            <p class="section-description">
+                Reserve these for specific data contexts only. They indicate positive, negative, or neutral states.
+                Never use them decoratively. They should appear only when communicating directional information.
+            </p>
+
+            <div class="colour-grid">
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #7CB542;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">MEADOW</div>
+                        <div class="colour-role">Positive / Growth / Success</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#7CB542')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#7CB542</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('124, 181, 66')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">124, 181, 66</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #C0614A;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">TERRACOTTA</div>
+                        <div class="colour-role">Negative / Decline / Caution</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#C0614A')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#C0614A</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('192, 97, 74')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">192, 97, 74</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #9EA89A;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">LICHEN</div>
+                        <div class="colour-role">Neutral / No Change / Inactive</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#9EA89A')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#9EA89A</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('158, 168, 154')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">158, 168, 154</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUPPORTING COLOURS -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 03.</div>
+            <h2 class="section-title">SUPPORTING COLOURS.</h2>
+            <p class="section-description">
+                These extend the palette for charts requiring multiple categories or complex data sets.
+                Use them only when core colours are insufficient. The green cast is deliberate — even neutrals stay in family.
+            </p>
+
+            <div class="colour-grid">
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #FFFFFF; border-bottom: 3px solid #D6DDD2;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">PURE WHITE</div>
+                        <div class="colour-role">Cards / Containers</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#FFFFFF')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#FFFFFF</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('255, 255, 255')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">255, 255, 255</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #7B5C9E;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">WILDFLOWER</div>
+                        <div class="colour-role">Additional Category / Accent</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#7B5C9E')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#7B5C9E</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('123, 92, 158')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">123, 92, 158</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #D6DDD2;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">PALE SAGE</div>
+                        <div class="colour-role">Borders / Light Structure</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#D6DDD2')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#D6DDD2</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('214, 221, 210')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">214, 221, 210</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+
+                <div class="colour-card">
+                    <div class="colour-swatch" style="background: #7A9080;"></div>
+                    <div class="colour-info">
+                        <div class="colour-name">SMOKE GREEN</div>
+                        <div class="colour-role">Secondary Text / Icons</div>
+                        <div class="colour-values">
+                            <div class="colour-value" onclick="copyToClipboard('#7A9080')">
+                                <span class="colour-value-label">HEX</span>
+                                <span class="colour-value-code">#7A9080</span>
+                            </div>
+                            <div class="colour-value" onclick="copyToClipboard('122, 144, 128')">
+                                <span class="colour-value-label">RGB</span>
+                                <span class="colour-value-code">122, 144, 128</span>
+                            </div>
+                        </div>
+                        <div class="copy-hint">▲ CLICK TO COPY ▲</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRADIENTS -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 04.</div>
+            <h2 class="section-title">GRADIENTS.</h2>
+            <p class="section-description">
+                Use gradients sparingly — primarily for hero sections or special emphasis.
+                All gradients maintain low saturation and subtle transitions. Avoid using gradients in data visualisations.
+            </p>
+
+            <div class="gradient-grid">
+                <div class="gradient-card">
+                    <div class="gradient-swatch" style="background: linear-gradient(135deg, #3D6E50 0%, #C8A84B 100%);"></div>
+                    <div class="gradient-info">
+                        <div class="gradient-name">PRIMARY GRADIENT</div>
+                        <div class="gradient-description">Forest to harvest gold. Use for headers or hero sections.</div>
+                        <div class="gradient-code" onclick="copyToClipboard('linear-gradient(135deg, #3D6E50 0%, #C8A84B 100%)')">
+                            linear-gradient(135deg, #3D6E50 0%, #C8A84B 100%)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gradient-card">
+                    <div class="gradient-swatch" style="background: linear-gradient(135deg, #F5F7F2 0%, #EBE4F5 100%);"></div>
+                    <div class="gradient-info">
+                        <div class="gradient-name">SUBTLE GRADIENT</div>
+                        <div class="gradient-description">Parchment to dusty lavender. Use for subtle depth on backgrounds.</div>
+                        <div class="gradient-code" onclick="copyToClipboard('linear-gradient(135deg, #F5F7F2 0%, #EBE4F5 100%)')">
+                            linear-gradient(135deg, #F5F7F2 0%, #EBE4F5 100%)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gradient-card">
+                    <div class="gradient-swatch" style="background: linear-gradient(to bottom, rgba(245,247,242,0) 0%, #F5F7F2 100%);"></div>
+                    <div class="gradient-info">
+                        <div class="gradient-name">FADE GRADIENT</div>
+                        <div class="gradient-description">Transparent to parchment. Use for content fade effects.</div>
+                        <div class="gradient-code" onclick="copyToClipboard('linear-gradient(to bottom, rgba(245,247,242,0) 0%, #F5F7F2 100%)')">
+                            linear-gradient(to bottom, rgba(245,247,242,0) 0%, #F5F7F2 100%)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gradient-card">
+                    <div class="gradient-swatch" style="background: linear-gradient(135deg, #1A2E22 0%, #5A9B72 100%);"></div>
+                    <div class="gradient-info">
+                        <div class="gradient-name">ACCENT GRADIENT</div>
+                        <div class="gradient-description">Deep canopy to meadow. Use very sparingly for special callouts.</div>
+                        <div class="gradient-code" onclick="copyToClipboard('linear-gradient(135deg, #1A2E22 0%, #5A9B72 100%)')">
+                            linear-gradient(135deg, #1A2E22 0%, #5A9B72 100%)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TYPOGRAPHY -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 05.</div>
+            <h2 class="section-title">TYPOGRAPHY.</h2>
+            <p class="section-description">
+                Typography is clean and unfussy. Use system fonts for reliability and performance.
+                Hierarchy comes from size and weight, not colour. Generous line height improves readability.
+            </p>
+
+            <div class="type-specimen">
+                <div class="type-example">
+                    <div class="type-label">DISPLAY</div>
+                    <div class="type-display">THE QUICK<br>BROWN FOX.</div>
+                    <div class="type-meta">38PX / BOLD / PRESS START 2P</div>
+                </div>
+
+                <div class="type-example">
+                    <div class="type-label">HEADING 1</div>
+                    <div class="type-h1">THE QUICK BROWN FOX JUMPS.</div>
+                    <div class="type-meta">28PX / BOLD / PRESS START 2P</div>
+                </div>
+
+                <div class="type-example">
+                    <div class="type-label">HEADING 2</div>
+                    <div class="type-h2">THE QUICK BROWN FOX JUMPS OVER.</div>
+                    <div class="type-meta">18PX / SEMIBOLD / PRESS START 2P</div>
+                </div>
+
+                <div class="type-example">
+                    <div class="type-label">HEADING 3</div>
+                    <div class="type-h3">THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG.</div>
+                    <div class="type-meta">12PX / SEMIBOLD / PRESS START 2P</div>
+                </div>
+
+                <div class="type-example">
+                    <div class="type-label">BODY</div>
+                    <div class="type-body">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump.</div>
+                    <div class="type-meta">15PX / REGULAR / COURIER NEW / 1.8 LINE HEIGHT</div>
+                </div>
+
+                <div class="type-example">
+                    <div class="type-label">SMALL</div>
+                    <div class="type-small">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+                    <div class="type-meta">12PX / REGULAR / COURIER NEW</div>
+                </div>
+
+                <div class="type-example">
+                    <div class="type-label">CAPTION</div>
+                    <div class="type-caption">THE QUICK BROWN FOX JUMPS OVER.</div>
+                    <div class="type-meta">9PX / SEMIBOLD / 2PX TRACKING / UPPERCASE</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">FONT STACK</div>
+                <div class="code-block" onclick="copyToClipboard('-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif')">
+                    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
+                </div>
+            </div>
+        </div>
+
+        <!-- USAGE GUIDELINES -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 06.</div>
+            <h2 class="section-title">USAGE GUIDELINES.</h2>
+            <p class="section-description">
+                Restraint is the core principle. Less is always more. These guidelines ensure consistency
+                across all applications while maintaining the minimalist philosophy.
+            </p>
+
+            <div class="usage-grid">
+                <div class="usage-card do-card">
+                    <div class="usage-title">▶ DO</div>
+                    <ul class="usage-list">
+                        <li>Use generous white space</li>
+                        <li>Limit colour use to 2–3 per design</li>
+                        <li>Let deep canopy do most of the heavy lifting</li>
+                        <li>Use harvest gold sparingly for emphasis</li>
+                        <li>Maintain clean hierarchy through size</li>
+                        <li>Use functional colours only for data states</li>
+                        <li>Keep backgrounds predominantly parchment</li>
+                        <li>Trust typography over decoration</li>
+                    </ul>
+                </div>
+
+                <div class="usage-card dont-card">
+                    <div class="usage-title">▶ DON'T</div>
+                    <ul class="usage-list">
+                        <li>Use all colours in a single design</li>
+                        <li>Apply gradients to data visualisations</li>
+                        <li>Use functional colours decoratively</li>
+                        <li>Over-saturate or brighten the palette</li>
+                        <li>Add drop shadows or heavy effects</li>
+                        <li>Use bright, primary colours</li>
+                        <li>Clutter layouts with unnecessary elements</li>
+                        <li>Mix this palette with other brand colours</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SPACING -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 07.</div>
+            <h2 class="section-title">SPACING SYSTEM.</h2>
+            <p class="section-description">
+                Consistent spacing creates rhythm and hierarchy. Use this 8-point system for all padding,
+                margins, and gaps. Generous spacing reinforces the minimalist aesthetic.
+            </p>
+
+            <div class="spacing-grid">
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 8px; height: 8px;"></div>
+                    <div class="spacing-label">XXS</div>
+                    <div class="spacing-value">8PX</div>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 16px; height: 16px;"></div>
+                    <div class="spacing-label">XS</div>
+                    <div class="spacing-value">16PX</div>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 24px; height: 24px;"></div>
+                    <div class="spacing-label">SM</div>
+                    <div class="spacing-value">24PX</div>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 32px; height: 32px;"></div>
+                    <div class="spacing-label">MD</div>
+                    <div class="spacing-value">32PX</div>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 48px; height: 48px;"></div>
+                    <div class="spacing-label">LG</div>
+                    <div class="spacing-value">48PX</div>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 64px; height: 64px;"></div>
+                    <div class="spacing-label">XL</div>
+                    <div class="spacing-value">64PX</div>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 80px; height: 80px;"></div>
+                    <div class="spacing-label">XXL</div>
+                    <div class="spacing-value">96PX</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POWER BI -->
+        <div class="pixel-divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+
+        <div class="section">
+            <div class="section-number">STAGE 08.</div>
+            <h2 class="section-title">POWER BI APPLICATION.</h2>
+            <p class="section-description">
+                Specific guidance for applying this palette in Microsoft Power BI reports.
+                These recommendations ensure consistency across dashboards and reports.
+            </p>
+
+            <div class="card">
+                <div class="card-title">THEME JSON SNIPPET</div>
+                <div class="code-block" onclick="copyToClipboard(this.textContent.trim())">
+{
+  "name": "Jason",
+  "dataColors": ["#3D6E50", "#C8A84B", "#7CB542", "#C0614A", "#9EA89A"],
+  "background": "#F5F7F2",
+  "foreground": "#1A2E22",
+  "tableAccent": "#C8A84B",
+  "good": "#7CB542",
+  "neutral": "#9EA89A",
+  "bad": "#C0614A"
+}
+                </div>
+                <div style="font-family: var(--pixel-font); font-size: 6px; color: var(--smoke-green); margin-top: 10px; opacity: 0.7;">
+                    ▲ CLICK TO COPY · IMPORT VIA VIEW → THEMES → BROWSE FOR THEMES
+                </div>
+            </div>
+
+            <div class="usage-grid">
+                <div class="usage-card" style="border-color: var(--forest);">
+                    <div class="usage-title" style="color: var(--forest); text-shadow: 0 0 8px rgba(61,110,80,0.5);">▶ CHART RECOMMENDATIONS</div>
+                    <ul class="usage-list">
+                        <li>Use forest green as primary data colour</li>
+                        <li>Apply harvest gold for comparative series</li>
+                        <li>Keep backgrounds parchment or pure white</li>
+                        <li>Use minimal gridlines (pale sage colour)</li>
+                        <li>Remove chart borders when possible</li>
+                        <li>Use deep canopy for all text and labels</li>
+                    </ul>
+                </div>
+
+                <div class="usage-card" style="border-color: var(--harvest-gold);">
+                    <div class="usage-title" style="color: var(--harvest-gold); text-shadow: 0 0 8px rgba(200,168,75,0.5);">▶ KPI CARDS</div>
+                    <ul class="usage-list">
+                        <li>White cards on parchment background</li>
+                        <li>Primary metric in harvest gold or deep canopy</li>
+                        <li>Comparison metrics use functional colours</li>
+                        <li>Minimal borders (pale sage, 1px)</li>
+                        <li>Generous padding (32–48px)</li>
+                        <li>Use caption style for labels</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <!-- FOOTER -->
+    <div class="footer">
+        BRAND GUIDELINES &nbsp;·&nbsp; <span>2026</span> &nbsp;·&nbsp; VERSION 1.0
+        &nbsp;·&nbsp; JAPES EDITION
+        <br><br>
+        <span style="animation: blink 1.5s step-end infinite; display: inline-block;">GAME OVER</span>
+    </div>
+
+</div><!-- /screen -->
+
+<script>
+    function copyToClipboard(text) {
+        const cleanText = text.trim();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(cleanText).then(function() {
+                showCopied();
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        } else {
+            const textArea = document.createElement('textarea');
+            textArea.value = cleanText;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showCopied();
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+            }
+            document.body.removeChild(textArea);
+        }
+    }
+
+    function showCopied() {
+        const notification = document.createElement('div');
+        notification.textContent = '▶ COPIED! ◀';
+        notification.style.cssText = [
+            'position: fixed',
+            'top: 20px',
+            'right: 20px',
+            'background: #1A2E22',
+            'color: #C8A84B',
+            'border: 4px solid #C8A84B',
+            'box-shadow: 4px 4px 0 #060E08, 0 0 20px rgba(200,168,75,0.5)',
+            'padding: 14px 24px',
+            'font-family: "Press Start 2P", monospace',
+            'font-size: 10px',
+            'z-index: 9999',
+            'animation: fadeInOut 2s forwards',
+            'letter-spacing: 2px'
+        ].join('; ');
+        document.body.appendChild(notification);
+        setTimeout(function() {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
