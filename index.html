@@ -138,8 +138,8 @@
 
         .cover {
             position: relative;
-            min-height: 420px;
-            padding: 56px 48px 7px;
+            min-height: 370px;
+            padding: 56px 48px 0;
             overflow: hidden;
             background: radial-gradient(ellipse at 25% 60%, rgba(61,110,80,0.07) 0%, transparent 65%);
         }
@@ -172,6 +172,7 @@
             letter-spacing: 3px;
             margin-bottom: 16px;
             text-shadow: 0 0 8px var(--meadow);
+            text-align: left;
         }
 
         .hero {
@@ -254,10 +255,11 @@
         .divider {
             font-family: var(--pixel-font);
             font-size: 7px;
+            line-height: 1;
             color: var(--forest);
             opacity: 0.45;
             letter-spacing: 2px;
-            padding: 12px 48px 0;
+            padding: 2px 48px 0;
             overflow: hidden;
             white-space: nowrap;
         }
@@ -265,15 +267,16 @@
         /* ══ TILE GRID ══════════════════════════════════════════════ */
 
         .tile-grid-wrap {
-            padding: 0 48px 40px;
+            padding: 0 48px 12px;
         }
 
         .tile-hint {
             font-family: var(--pixel-font);
             font-size: 6px;
+            line-height: 1;
             color: var(--smoke-green);
             letter-spacing: 2px;
-            padding: 7px 0 5px;
+            padding: 1px 0 1px;
             opacity: 0.8;
             animation: blink 2.5s step-end infinite;
         }
@@ -295,7 +298,7 @@
             align-items: center;
             justify-content: center;
             gap: 14px;
-            aspect-ratio: 1 / 1;
+            aspect-ratio: 10 / 5;
             position: relative;
             transition: border-color 0.1s, box-shadow 0.1s, background 0.1s;
             -webkit-tap-highlight-color: transparent;
@@ -551,7 +554,7 @@
             <div class="hi-score">PLAYER &nbsp;<b>Jason G</b></div>
             <div class="hi-score">HI-SCORE &nbsp;<b>019,860</b></div>
         </div>
-        <div class="level-badge info-label">▶ LEVEL 40 UNLOCKED</div>
+        <div class="level-badge info-label">>> LEVEL 40 UNLOCKED <<</div>
         <div class="hero">YOU'RE<br>INVITED<span class="cursor"></span></div>
 
         <div class="info-lines">
@@ -596,9 +599,6 @@
         </div>
     </div>
 
-    <!-- DIVIDER -->
-    <div class="divider" style="padding-top: 0;">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
-
     <!-- RSVP TERMINAL -->
     <div class="rsvp-wrap">
         <div class="rsvp-box">
@@ -614,12 +614,8 @@
                     <span class="info-icon"><svg viewBox="150 100 1570 1680" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" overflow="hidden"><g transform="translate(-1461 34)"><g><g><g><path fill="#C8A84B" d="M1086.25 144.833 1231.08 144.833 1231.08 289.667 1520.75 289.667 1520.75 1593.17 217.25 1593.17 217.25 289.667 506.917 289.667 506.917 144.833 651.75 144.833 651.75 289.667 1086.25 289.667 1086.25 144.833ZM651.75 434.5 362.083 434.5 362.083 579.333 1375.92 579.333 1375.92 434.5 651.75 434.5ZM362.083 724.167 362.083 1448.33 1375.92 1448.33 1375.92 724.167 362.083 724.167ZM506.917 869 651.75 869 651.75 1013.83 506.917 1013.83 506.917 869ZM941.417 869 796.583 869 796.583 1013.83 941.417 1013.83 941.417 869ZM1086.25 869 1231.08 869 1231.08 1013.83 1086.25 1013.83 1086.25 869ZM651.75 1158.67 506.917 1158.67 506.917 1303.5 651.75 1303.5 651.75 1158.67ZM796.583 1158.67 941.417 1158.67 941.417 1303.5 796.583 1303.5 796.583 1158.67ZM1231.08 1158.67 1086.25 1158.67 1086.25 1303.5 1231.08 1303.5 1231.08 1158.67Z" transform="matrix(1.00058 0 0 1 1461 -34)"/></g></g></g><rect x="2837" y="1559" width="146" height="147" fill="#C8A84B"/><rect x="2837" y="1126" width="150" height="147" fill="#0A140D"/><rect x="2548" y="1413" width="146" height="148" fill="#0A140D"/><rect x="2982" y="1413" width="146" height="147" fill="#C8A84B"/><rect x="2544" y="1122" width="150" height="149" fill="#0A140D"/></g></svg></span>
                     <span class="info-label">SYNC</span>
                     <span class="info-sep">:</span>
-                    <span class="info-desc">Save the date &nbsp;<a class="cal-link" href="#" onclick="downloadICS();return false;">[ ADD TO CALENDAR ]</a></span>
+                    <span class="info-desc"><a class="cal-link" href="#" onclick="downloadICS();return false;">[ ADD TO CALENDAR ]</a></span>
                 </div>
-            </div>
-            <div class="term-comment">
-                // STATUS &nbsp;: AWAITING_CONFIRMATION<br>
-                // COORDS &nbsp;: [LOCKED] — UNLOCKED ON CONFIRM
             </div>
         </div>
     </div>
