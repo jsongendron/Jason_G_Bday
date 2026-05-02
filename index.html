@@ -139,9 +139,16 @@
         .cover {
             position: relative;
             min-height: 420px;
-            padding: 56px 48px 48px;
+            padding: 56px 48px 24px;
             overflow: hidden;
             background: radial-gradient(ellipse at 25% 60%, rgba(61,110,80,0.07) 0%, transparent 65%);
+        }
+
+        .cover-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 44px;
         }
 
         .hi-score {
@@ -149,7 +156,6 @@
             font-size: 8px;
             color: var(--lichen);
             letter-spacing: 2px;
-            margin-bottom: 44px;
             opacity: 0.7;
         }
 
@@ -161,7 +167,7 @@
 
         .level-badge {
             font-family: var(--pixel-font);
-            font-size: 9px;
+            font-size: 14px;
             color: var(--meadow);
             letter-spacing: 3px;
             margin-bottom: 16px;
@@ -173,7 +179,7 @@
             font-size: 44px;
             color: var(--harvest-gold);
             line-height: 1.45;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-shadow:
                 0 0 10px var(--harvest-gold),
                 0 0 30px rgba(200,168,75,0.5),
@@ -273,7 +279,7 @@
 
         .tile-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
         }
 
@@ -337,7 +343,7 @@
 
         .tile-label {
             font-family: var(--pixel-font);
-            font-size: 10px;
+            font-size: 11px;
             color: var(--meadow);
             letter-spacing: 1px;
             text-align: center;
@@ -540,8 +546,10 @@
 
     <!-- COVER -->
     <div class="cover">
-        <div class="hi-score">HI-SCORE &nbsp;<b>019,860</b></div>
-        <div class="hi-score">PLAYER &nbsp;&nbsp;<b>Jason_G</b></div>
+        <div class="cover-stats">
+            <div class="hi-score">PLAYER &nbsp;<b>Jason G</b></div>
+            <div class="hi-score">HI-SCORE &nbsp;<b>019,860</b></div>
+        </div>
         <div class="level-badge">▶ LEVEL 40 UNLOCKED</div>
         <div class="hero">YOU'RE<br>INVITED<span class="cursor"></span></div>
 
@@ -568,11 +576,6 @@
     <div class="tile-grid-wrap">
         <div class="tile-hint">▶ SELECT A TILE TO VIEW DETAILS ◀</div>
         <div class="tile-grid">
-
-            <div class="tile" data-tile="sync">
-                <div class="tile-icon"><svg viewBox="150 100 1570 1680" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" overflow="hidden"><g transform="translate(-1461 34)"><g><g><g><path fill="#C8A84B" d="M1086.25 144.833 1231.08 144.833 1231.08 289.667 1520.75 289.667 1520.75 1593.17 217.25 1593.17 217.25 289.667 506.917 289.667 506.917 144.833 651.75 144.833 651.75 289.667 1086.25 289.667 1086.25 144.833ZM651.75 434.5 362.083 434.5 362.083 579.333 1375.92 579.333 1375.92 434.5 651.75 434.5ZM362.083 724.167 362.083 1448.33 1375.92 1448.33 1375.92 724.167 362.083 724.167ZM506.917 869 651.75 869 651.75 1013.83 506.917 1013.83 506.917 869ZM941.417 869 796.583 869 796.583 1013.83 941.417 1013.83 941.417 869ZM1086.25 869 1231.08 869 1231.08 1013.83 1086.25 1013.83 1086.25 869ZM651.75 1158.67 506.917 1158.67 506.917 1303.5 651.75 1303.5 651.75 1158.67ZM796.583 1158.67 941.417 1158.67 941.417 1303.5 796.583 1303.5 796.583 1158.67ZM1231.08 1158.67 1086.25 1158.67 1086.25 1303.5 1231.08 1303.5 1231.08 1158.67Z" transform="matrix(1.00058 0 0 1 1461 -34)"/></g></g></g><rect x="2837" y="1559" width="146" height="147" fill="#C8A84B"/><rect x="2837" y="1126" width="150" height="147" fill="#0A140D"/><rect x="2548" y="1413" width="146" height="148" fill="#0A140D"/><rect x="2982" y="1413" width="146" height="147" fill="#C8A84B"/><rect x="2544" y="1122" width="150" height="149" fill="#0A140D"/></g></svg></div>
-                <div class="tile-label">SYNC</div>
-            </div>
 
             <div class="tile" data-tile="hp">
                 <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M8.6 717.1v98.3h154.7v98.2h92.2v98.3h516.1v-98.3h92.2v-98.2h154.7v-98.3z" fill="#7A5C18"/><path d="M538.7 13.1h100.5v100.5H538.7zM438.2 113.6h100.5v100.5H438.2zM538.7 214.1v100.6H438.2v100.5H589V314.7h118.2v100.5H855V314.7h-62.2V214.1h-90.5V113.6h-63.1v100.5zM590.3 416.2h150.8v100.5H590.3zM488.4 516.7v100.5H387.9v100.5h175.9V617.2h75.4V516.7zM941.2 516.7V416.2H855v100.5H741.1v100.5H639.2v100.5h258.9V617.2h82.6V516.7zM337.6 416.2h150.8v100.5H337.6zM237.1 516.7v100.5H136.6v100.5h175.9V617.2h75.4V516.7zM337.6 214.1h100.5v100.5H337.6zM237.1 314.7h100.5v100.5H237.1zM136.6 416.2h100.5v100.5H136.6zM36.1 516.7h100.5v100.5H36.1z" fill="#C8A84B"/></svg></div>
@@ -645,10 +648,6 @@
         'skin': {
             title: '★ SKIN',
             html:  'Casual.<br><br>Optional side quest: wear a nod to your favourite old game — a pin, a cap, a tee, whatever.'
-        },
-        'sync': {
-            title: '▶ SYNC',
-            html:  'Save the date.<br><br><a class="cal-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Jason%27s+40th+Birthday&dates=20260627T180000%2F20260628T000000&details=Jason+turns+40%21+RSVP+for+location+details.&location=Carlton%2C+Melbourne" target="_blank">[ ADD TO CALENDAR ]</a>'
         }
     };
 
