@@ -139,7 +139,7 @@
         .cover {
             position: relative;
             min-height: 420px;
-            padding: 56px 48px 0;
+            padding: 56px 48px 48px;
             overflow: hidden;
             background: radial-gradient(ellipse at 25% 60%, rgba(61,110,80,0.07) 0%, transparent 65%);
         }
@@ -196,6 +196,52 @@
             50%       { opacity: 0; }
         }
 
+        /* ══ INFO LINES ═════════════════════════════════════════════ */
+
+        .info-lines {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: 18px max-content auto 1fr;
+            column-gap: 12px;
+            row-gap: 16px;
+            align-items: center;
+        }
+
+        .info-line {
+            display: contents;
+        }
+
+        .info-icon svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+            filter: drop-shadow(0 0 3px rgba(200,168,75,0.5));
+            flex-shrink: 0;
+        }
+
+        .info-label {
+            font-family: var(--pixel-font);
+            font-size: 7px;
+            color: var(--meadow);
+            letter-spacing: 1px;
+            text-shadow: 0 0 4px rgba(124,181,66,0.3);
+            white-space: nowrap;
+        }
+
+        .info-sep {
+            font-family: var(--pixel-font);
+            font-size: 7px;
+            color: var(--smoke-green);
+            flex-shrink: 0;
+        }
+
+        .info-desc {
+            font-family: var(--mono);
+            font-size: 15px;
+            color: var(--parchment);
+            line-height: 1.4;
+        }
+
         /* ══ DIVIDER ════════════════════════════════════════════════ */
 
         .divider {
@@ -227,7 +273,7 @@
 
         .tile-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
 
@@ -378,15 +424,14 @@
             opacity: 0.9;
         }
 
-        .modal-body .cal-link {
+        .cal-link {
             color: var(--harvest-gold);
             text-decoration: none;
             text-shadow: 0 0 6px rgba(200,168,75,0.4);
             display: inline-block;
-            margin-top: 8px;
         }
 
-        .modal-body .cal-link:hover { text-decoration: underline; }
+        .cal-link:hover { text-decoration: underline; }
 
         .modal-close {
             font-family: var(--pixel-font);
@@ -468,7 +513,7 @@
             .cursor          { width: 20px; height: 28px; }
             .divider         { padding-left: 24px; padding-right: 24px; }
             .tile-grid-wrap  { padding-left: 20px; padding-right: 20px; }
-            .tile-grid       { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .tile-grid       { gap: 10px; }
             .tile            { padding: 8px; gap: 10px; }
             .tile-icon       { font-size: 32px; }
             .tile-icon svg   { width: 36px; height: 36px; }
@@ -499,6 +544,21 @@
         <div class="hi-score">PLAYER &nbsp;&nbsp;<b>Jason_G</b></div>
         <div class="level-badge">▶ LEVEL 40 UNLOCKED</div>
         <div class="hero">YOU'RE<br>INVITED<span class="cursor"></span></div>
+
+        <div class="info-lines">
+            <div class="info-line">
+                <span class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#C8A84B" d="M19 3H5v2H3v14h2v2h14v-2h2V5h-2zm0 2v14H5V5zm-8 2h2v6h4v2h-6z"/></svg></span>
+                <span class="info-label">TIME</span>
+                <span class="info-sep">:</span>
+                <span class="info-desc">Saturday 27 June &nbsp;·&nbsp; from 6pm</span>
+            </div>
+            <div class="info-line">
+                <span class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#C8A84B" d="M7 2h10v2H7zM5 6V4h2v2zm0 8H3V6h2zm2 2H5v-2h2zm2 2H7v-2h2zm2 2H9v-2h2zm2 0v2h-2v-2zm2-2v2h-2v-2zm2-2v2h-2v-2zm2-2v2h-2v-2zm0-8h2v8h-2zm0 0V4h-2v2zm-5 2h-4v4h4z"/></svg></span>
+                <span class="info-label">SECTOR</span>
+                <span class="info-sep">:</span>
+                <span class="info-desc">Jason_G's base in Carlton</span>
+            </div>
+        </div>
     </div>
 
     <!-- DIVIDER -->
@@ -509,18 +569,8 @@
         <div class="tile-hint">▶ SELECT A TILE TO VIEW DETAILS ◀</div>
         <div class="tile-grid">
 
-            <div class="tile" data-tile="when">
-                <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#C8A84B" d="M19 3H5v2H3v14h2v2h14v-2h2V5h-2zm0 2v14H5V5zm-8 2h2v6h4v2h-6z"/></svg></div>
-                <div class="tile-label">TIME</div>
-            </div>
-
-            <div class="tile" data-tile="sector">
-                <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#C8A84B" d="M7 2h10v2H7zM5 6V4h2v2zm0 8H3V6h2zm2 2H5v-2h2zm2 2H7v-2h2zm2 2H9v-2h2zm2 0v2h-2v-2zm2-2v2h-2v-2zm2-2v2h-2v-2zm2-2v2h-2v-2zm0-8h2v8h-2zm0 0V4h-2v2zm-5 2h-4v4h4z"/></svg></div>
-                <div class="tile-label">SECTOR</div>
-            </div>
-
             <div class="tile" data-tile="sync">
-                <div class="tile-icon">▶</div>
+                <div class="tile-icon"><svg viewBox="150 100 1570 1680" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" overflow="hidden"><g transform="translate(-1461 34)"><g><g><g><path fill="#C8A84B" d="M1086.25 144.833 1231.08 144.833 1231.08 289.667 1520.75 289.667 1520.75 1593.17 217.25 1593.17 217.25 289.667 506.917 289.667 506.917 144.833 651.75 144.833 651.75 289.667 1086.25 289.667 1086.25 144.833ZM651.75 434.5 362.083 434.5 362.083 579.333 1375.92 579.333 1375.92 434.5 651.75 434.5ZM362.083 724.167 362.083 1448.33 1375.92 1448.33 1375.92 724.167 362.083 724.167ZM506.917 869 651.75 869 651.75 1013.83 506.917 1013.83 506.917 869ZM941.417 869 796.583 869 796.583 1013.83 941.417 1013.83 941.417 869ZM1086.25 869 1231.08 869 1231.08 1013.83 1086.25 1013.83 1086.25 869ZM651.75 1158.67 506.917 1158.67 506.917 1303.5 651.75 1303.5 651.75 1158.67ZM796.583 1158.67 941.417 1158.67 941.417 1303.5 796.583 1303.5 796.583 1158.67ZM1231.08 1158.67 1086.25 1158.67 1086.25 1303.5 1231.08 1303.5 1231.08 1158.67Z" transform="matrix(1.00058 0 0 1 1461 -34)"/></g></g></g><rect x="2837" y="1559" width="146" height="147" fill="#C8A84B"/><rect x="2837" y="1126" width="150" height="147" fill="#0A140D"/><rect x="2548" y="1413" width="146" height="148" fill="#0A140D"/><rect x="2982" y="1413" width="146" height="147" fill="#C8A84B"/><rect x="2544" y="1122" width="150" height="149" fill="#0A140D"/></g></svg></div>
                 <div class="tile-label">SYNC</div>
             </div>
 
@@ -549,7 +599,20 @@
     <div class="rsvp-wrap">
         <div class="rsvp-box">
             <div class="rsvp-head">▶ RSVP_TERMINAL</div>
-            <div class="rsvp-line">RSVP by responding to the SMS received.</div>
+            <div class="info-lines" style="margin-top: 0;">
+                <div class="info-line">
+                    <span class="info-icon"><svg fill="#C8A84B" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><g><polygon points="80,66.7 106.7,66.7 133.3,66.7 160,66.7 186.7,66.7 213.3,66.7 240,66.7 266.7,66.7 293.3,66.7 320,66.7 346.7,66.7 373.3,66.7 373.3,40 346.7,40 320,40 293.3,40 266.7,40 240,40 213.3,40 186.7,40 160,40 133.3,40 106.7,40 80,40 53.3,40 26.7,40 26.7,66.7 53.3,66.7"/><polygon points="373.3,66.7 373.3,93.3 373.3,120 373.3,146.7 373.3,173.3 373.3,200 373.3,226.7 373.3,253.3 373.3,280 373.3,306.7 373.3,333.3 400,333.3 400,306.7 400,280 400,253.3 400,226.7 400,200 400,173.3 400,146.7 400,120 400,93.3 400,66.7"/><rect height="26.7" width="26.7" x="53.3" y="93.3"/><rect height="26.7" width="26.7" x="320" y="93.3"/><rect height="26.7" width="26.7" x="80" y="120"/><rect height="26.7" width="26.7" x="106.7" y="146.7"/><rect height="26.7" width="26.7" x="266.7" y="146.7"/><rect height="26.7" width="26.7" x="293.3" y="120"/><rect height="26.7" width="26.7" x="133.3" y="173.3"/><rect height="26.7" width="26.7" x="160" y="200"/><rect height="26.7" width="26.7" x="213.3" y="200"/><rect height="26.7" width="26.7" x="240" y="173.3"/><rect height="26.7" width="26.7" x="186.7" y="226.7"/><polygon points="26.7,280 26.7,253.3 26.7,226.7 26.7,200 26.7,173.3 26.7,146.7 26.7,120 26.7,93.3 26.7,66.7 0,66.7 0,93.3 0,120 0,146.7 0,173.3 0,200 0,226.7 0,253.3 0,280 0,306.7 0,333.3 26.7,333.3 26.7,306.7"/><polygon points="320,333.3 293.3,333.3 266.7,333.3 240,333.3 213.3,333.3 186.7,333.3 160,333.3 133.3,333.3 106.7,333.3 80,333.3 53.3,333.3 26.7,333.3 26.7,360 53.3,360 80,360 106.7,360 133.3,360 160,360 186.7,360 213.3,360 240,360 266.7,360 293.3,360 320,360 346.7,360 373.3,360 373.3,333.3 346.7,333.3"/></g></svg></span>
+                    <span class="info-label">RSVP</span>
+                    <span class="info-sep">:</span>
+                    <span class="info-desc">RSVP by responding to the message received.</span>
+                </div>
+                <div class="info-line">
+                    <span class="info-icon"><svg viewBox="150 100 1570 1680" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" overflow="hidden"><g transform="translate(-1461 34)"><g><g><g><path fill="#C8A84B" d="M1086.25 144.833 1231.08 144.833 1231.08 289.667 1520.75 289.667 1520.75 1593.17 217.25 1593.17 217.25 289.667 506.917 289.667 506.917 144.833 651.75 144.833 651.75 289.667 1086.25 289.667 1086.25 144.833ZM651.75 434.5 362.083 434.5 362.083 579.333 1375.92 579.333 1375.92 434.5 651.75 434.5ZM362.083 724.167 362.083 1448.33 1375.92 1448.33 1375.92 724.167 362.083 724.167ZM506.917 869 651.75 869 651.75 1013.83 506.917 1013.83 506.917 869ZM941.417 869 796.583 869 796.583 1013.83 941.417 1013.83 941.417 869ZM1086.25 869 1231.08 869 1231.08 1013.83 1086.25 1013.83 1086.25 869ZM651.75 1158.67 506.917 1158.67 506.917 1303.5 651.75 1303.5 651.75 1158.67ZM796.583 1158.67 941.417 1158.67 941.417 1303.5 796.583 1303.5 796.583 1158.67ZM1231.08 1158.67 1086.25 1158.67 1086.25 1303.5 1231.08 1303.5 1231.08 1158.67Z" transform="matrix(1.00058 0 0 1 1461 -34)"/></g></g></g><rect x="2837" y="1559" width="146" height="147" fill="#C8A84B"/><rect x="2837" y="1126" width="150" height="147" fill="#0A140D"/><rect x="2548" y="1413" width="146" height="148" fill="#0A140D"/><rect x="2982" y="1413" width="146" height="147" fill="#C8A84B"/><rect x="2544" y="1122" width="150" height="149" fill="#0A140D"/></g></svg></span>
+                    <span class="info-label">SYNC</span>
+                    <span class="info-sep">:</span>
+                    <span class="info-desc">Save the date &nbsp;<a class="cal-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Jason%27s+40th+Birthday&dates=20260627T180000%2F20260628T000000&details=Jason+turns+40%21+RSVP+for+location+details.&location=Carlton%2C+Melbourne" target="_blank">[ ADD TO CALENDAR ]</a></span>
+                </div>
+            </div>
             <div class="term-comment">
                 // STATUS &nbsp;: AWAITING_CONFIRMATION<br>
                 // COORDS &nbsp;: [LOCKED] — UNLOCKED ON CONFIRM
@@ -571,14 +634,6 @@
 
 <script>
     var tileData = {
-        'when': {
-            title: '◆ TIME',
-            html:  '<strong>Saturday 27 June</strong><br>from 6pm'
-        },
-        'sector': {
-            title: '▲ SECTOR',
-            html:  'Jason_G\'s base in Carlton'
-        },
         'hp': {
             title: '♥ HP',
             html:  'Sweet &amp; savoury supply.<br>Host-stocked.<br>Eat freely.'
