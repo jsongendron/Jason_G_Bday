@@ -150,8 +150,7 @@
         body.pre-boot .boot-logo,
         body.pre-boot .boot-sub,
         body.pre-boot .boot-bar-outer,
-        body.pre-boot .boot-bar-inner,
-        body.pre-boot .screen {
+        body.pre-boot .boot-bar-inner {
             animation-play-state: paused;
         }
 
@@ -171,8 +170,6 @@
             border-radius: 8px;
             overflow: hidden;
             position: relative;
-            opacity: 0;
-            animation: screenReveal 0.6s ease-out 3.2s forwards;
         }
 
         #exit-fs {
@@ -575,6 +572,21 @@
             font-weight: normal;
         }
 
+        /* ══ SPARKLE OVERLAY ════════════════════════════════════════ */
+
+        #sparkle-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #sparkle-canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
         /* ══ RESPONSIVE ═════════════════════════════════════════════ */
 
         @media (max-width: 640px) {
@@ -614,6 +626,8 @@
 
 <!-- ══ INVITATION ══════════════════════════════════════════════════ -->
 <div class="screen">
+
+    <div id="sparkle-overlay"><canvas id="sparkle-canvas"></canvas></div>
 
     <button id="exit-fs" onclick="document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen && document.webkitExitFullscreen()">[x]</button>
 
@@ -749,6 +763,8 @@
         document.getElementById('splash').style.display = 'none';
         document.body.classList.remove('pre-boot');
 
+        startSparkleOverlay();
+
         setTimeout(function () {
             document.getElementById('boot').classList.add('gone');
         }, 3900);
@@ -779,6 +795,101 @@ function downloadICS() {
   a.click();
   URL.revokeObjectURL(url);
 }
+</script>
+
+<script>
+(function () {
+    var PAL = [
+        [26,  46,  34],
+        [61,  110, 80],
+        [200, 168, 75],
+        [124, 181, 66],
+        [192, 97,  74],
+        [245, 247, 242],
+        [158, 168, 154],
+        [123, 92,  158]
+    ];
+
+    var PX = 8, GAP = 1, CELL = PX + GAP;
+    var COLS, ROWS, buf;
+    var sc   = document.getElementById('sparkle-canvas');
+    var sctx = sc.getContext('2d');
+    var rafId = null;
+
+    function init() {
+        var ov = document.getElementById('sparkle-overlay');
+        COLS = Math.ceil((ov.offsetWidth  || window.innerWidth)  / CELL) + 1;
+        ROWS = Math.ceil((ov.offsetHeight || window.innerHeight) / CELL) + 1;
+        sc.width  = COLS * CELL - GAP;
+        sc.height = ROWS * CELL - GAP;
+        buf = new Float32Array(COLS * ROWS * 4);
+    }
+
+    function setPixel(x, y, r, g, b, a) {
+        if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
+        var i = (y * COLS + x) * 4;
+        buf[i] = r; buf[i+1] = g; buf[i+2] = b; buf[i+3] = a;
+    }
+
+    function fadeAll(f) {
+        for (var i = 3; i < buf.length; i += 4) buf[i] *= f;
+    }
+
+    function step() {
+        fadeAll(0.88);
+        for (var i = 0; i < 22; i++) {
+            var x = Math.floor(Math.random() * COLS);
+            var y = Math.floor(Math.random() * ROWS);
+            var p = PAL[Math.floor(Math.random() * PAL.length)];
+            setPixel(x, y, p[0], p[1], p[2], 0.65 + Math.random() * 0.35);
+        }
+    }
+
+    function draw() {
+        sctx.fillStyle = '#060e08';
+        sctx.fillRect(0, 0, sc.width, sc.height);
+        for (var y = 0; y < ROWS; y++) {
+            for (var x = 0; x < COLS; x++) {
+                var i = (y * COLS + x) * 4;
+                var a = buf[i + 3];
+                if (a < 0.02) continue;
+                var r = Math.round(buf[i]);
+                var g = Math.round(buf[i+1]);
+                var b = Math.round(buf[i+2]);
+                var px = x * CELL, py = y * CELL;
+                sctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (a * 0.2).toFixed(3) + ')';
+                sctx.fillRect(px - 2, py - 2, PX + 4, PX + 4);
+                sctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(3) + ')';
+                sctx.fillRect(px, py, PX, PX);
+                if (a > 0.5) {
+                    sctx.fillStyle = 'rgba(255,255,255,' + (a * 0.12).toFixed(3) + ')';
+                    sctx.fillRect(px, py, 2, 2);
+                }
+            }
+        }
+    }
+
+    function loop() {
+        step();
+        draw();
+        rafId = requestAnimationFrame(loop);
+    }
+
+    window.startSparkleOverlay = function () {
+        init();
+        loop();
+        // fade out after boot sequence (3200ms) + 1500ms of visible sparkle
+        setTimeout(function () {
+            var ov = document.getElementById('sparkle-overlay');
+            ov.style.transition = 'opacity 0.5s';
+            ov.style.opacity = '0';
+            setTimeout(function () {
+                cancelAnimationFrame(rafId);
+                ov.style.display = 'none';
+            }, 500);
+        }, 4700);
+    };
+}());
 </script>
 
 </body>
