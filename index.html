@@ -101,7 +101,10 @@
             opacity: 0;
             pointer-events: none;
             display: block;
+            transition: opacity 1s ease-out;
         }
+
+        #pixel-selfie.visible { opacity: 0.4; }
 
         .boot-logo {
             font-family: var(--pixel-font);
@@ -623,6 +626,22 @@
             .rsvp-wrap       { padding-left: 24px; padding-right: 24px; padding-bottom: 24px; }
             .rsvp-box        { padding: 20px; }
             .footer          { padding-left: 24px; padding-right: 24px; }
+
+            #pixel-selfie {
+                position: static;
+                transform: none;
+                top: auto;
+                left: auto;
+                height: auto;
+                width: auto;
+                max-width: 100%;
+                flex: 1;
+                align-self: center;
+                min-height: 0;
+                z-index: auto;
+                pointer-events: auto;
+            }
+            #pixel-selfie.visible { opacity: 1; }
         }
     </style>
 </head>
@@ -647,9 +666,6 @@
     <canvas id="sparkle-canvas"></canvas>
 </div>
 
-<!-- ══ PIXEL SELFIE ════════════════════════════════════════════════ -->
-<img id="pixel-selfie" src="Pixel%20selfie.svg" alt="">
-
 <!-- ══ INVITATION ══════════════════════════════════════════════════ -->
 <div class="screen">
 
@@ -664,6 +680,9 @@
         </div>
         <div class="level-badge info-label">>> LEVEL 40 UNLOCKED <<</div>
         <div class="hero">YOU'RE<br>INVITED<span class="cursor"></span></div>
+
+        <!-- PIXEL SELFIE — flex item on mobile, fixed overlay on desktop -->
+        <img id="pixel-selfie" src="Pixel%20selfie.svg" alt="">
 
         <div class="info-lines">
             <div class="info-line">
@@ -790,9 +809,7 @@
         setTimeout(startSparkle, 3100);
 
         setTimeout(function () {
-            var selfie = document.getElementById('pixel-selfie');
-            selfie.style.transition = 'opacity 1s ease-out';
-            selfie.style.opacity = '0.4';
+            document.getElementById('pixel-selfie').classList.add('visible');
         }, 3200);
 
         setTimeout(function () {
