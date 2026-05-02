@@ -88,6 +88,21 @@
             left: 0;
         }
 
+        /* ══ PIXEL SELFIE ═══════════════════════════════════════════ */
+
+        #pixel-selfie {
+            position: fixed;
+            top: 25vh;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 25vh;
+            width: auto;
+            z-index: 9001;
+            opacity: 0;
+            pointer-events: none;
+            display: block;
+        }
+
         .boot-logo {
             font-family: var(--pixel-font);
             font-size: 36px;
@@ -632,6 +647,9 @@
     <canvas id="sparkle-canvas"></canvas>
 </div>
 
+<!-- ══ PIXEL SELFIE ════════════════════════════════════════════════ -->
+<img id="pixel-selfie" src="Pixel%20selfie.svg" alt="">
+
 <!-- ══ INVITATION ══════════════════════════════════════════════════ -->
 <div class="screen">
 
@@ -770,6 +788,12 @@
         document.body.classList.remove('pre-boot');
 
         setTimeout(startSparkle, 3100);
+
+        setTimeout(function () {
+            var selfie = document.getElementById('pixel-selfie');
+            selfie.style.transition = 'opacity 1s ease-out';
+            selfie.style.opacity = '0.4';
+        }, 3200);
 
         setTimeout(function () {
             document.getElementById('boot').classList.add('gone');
