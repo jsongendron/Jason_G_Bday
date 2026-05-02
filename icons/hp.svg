@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges">
+  <!-- Pizza slice — tip pointing up, crust at bottom -->
+  <!-- Row 0: tip -->
+  <rect x="9" y="0" width="3" height="3" fill="#C8A84B"/>
+  <!-- Row 1 -->
+  <rect x="6" y="3" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="3" width="3" height="3" fill="#C8A84B"/>
+  <rect x="12" y="3" width="3" height="3" fill="#C8A84B"/>
+  <!-- Row 2: pepperoni at col 3 -->
+  <rect x="3" y="6" width="3" height="3" fill="#C8A84B"/>
+  <rect x="6" y="6" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="6" width="3" height="3" fill="#C84B4B"/>
+  <rect x="12" y="6" width="3" height="3" fill="#C8A84B"/>
+  <rect x="15" y="6" width="3" height="3" fill="#C8A84B"/>
+  <!-- Row 3 -->
+  <rect x="3" y="9" width="3" height="3" fill="#C8A84B"/>
+  <rect x="6" y="9" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="9" width="3" height="3" fill="#C8A84B"/>
+  <rect x="12" y="9" width="3" height="3" fill="#C8A84B"/>
+  <rect x="15" y="9" width="3" height="3" fill="#C8A84B"/>
+  <!-- Row 4 -->
+  <rect x="0" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="3" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="6" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="12" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="15" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="18" y="12" width="3" height="3" fill="#C8A84B"/>
+  <!-- Row 5: crust -->
+  <rect x="0" y="15" width="3" height="3" fill="#8B6420"/>
+  <rect x="3" y="15" width="3" height="3" fill="#8B6420"/>
+  <rect x="6" y="15" width="3" height="3" fill="#8B6420"/>
+  <rect x="9" y="15" width="3" height="3" fill="#8B6420"/>
+  <rect x="12" y="15" width="3" height="3" fill="#8B6420"/>
+  <rect x="15" y="15" width="3" height="3" fill="#8B6420"/>
+  <rect x="18" y="15" width="3" height="3" fill="#8B6420"/>
+  <rect x="21" y="15" width="3" height="3" fill="#8B6420"/>
+</svg>

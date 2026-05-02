@@ -282,6 +282,14 @@
             line-height: 1;
         }
 
+        .tile-icon img {
+            width: 24px;
+            height: 24px;
+            display: block;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 0 4px rgba(200,168,75,0.5));
+        }
+
         .tile-label {
             font-family: var(--pixel-font);
             font-size: 7px;
@@ -464,6 +472,7 @@
             .tile-grid       { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .tile            { min-height: 96px; padding: 18px 10px 14px; }
             .tile-icon       { font-size: 20px; }
+            .tile-icon img   { width: 20px; height: 20px; }
             .rsvp-wrap       { padding-left: 24px; padding-right: 24px; }
             .rsvp-box        { padding: 20px; }
             .footer          { padding-left: 24px; padding-right: 24px; }
@@ -501,27 +510,27 @@
         <div class="tile-grid">
 
             <div class="tile" data-tile="when">
-                <div class="tile-icon">◆</div>
+                <div class="tile-icon"><img src="icons/clock.svg" alt="WHEN"></div>
                 <div class="tile-label">WHEN</div>
             </div>
 
             <div class="tile" data-tile="sector">
-                <div class="tile-icon">▲</div>
+                <div class="tile-icon"><img src="icons/pin.svg" alt="SECTOR"></div>
                 <div class="tile-label">SECTOR</div>
             </div>
 
             <div class="tile" data-tile="hp">
-                <div class="tile-icon">♥</div>
+                <div class="tile-icon"><img src="icons/rice-svgrepo-com.svg" alt="HP"></div>
                 <div class="tile-label">HP</div>
             </div>
 
             <div class="tile" data-tile="mp">
-                <div class="tile-icon">◇</div>
+                <div class="tile-icon"><img src="icons/cocktail.svg" alt="MP"></div>
                 <div class="tile-label">MP</div>
             </div>
 
             <div class="tile" data-tile="skin">
-                <div class="tile-icon">★</div>
+                <div class="tile-icon"><img src="icons/t-shirt-svgrepo-com.svg" alt="SKIN"></div>
                 <div class="tile-label">SKIN</div>
             </div>
 

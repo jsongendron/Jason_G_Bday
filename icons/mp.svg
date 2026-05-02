@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges">
+  <!-- Champagne flute -->
+  <!-- Row 0: bubbles -->
+  <rect x="6" y="0" width="3" height="3" fill="#E8D060"/>
+  <rect x="12" y="0" width="3" height="3" fill="#E8D060"/>
+  <!-- Row 1: rim/opening -->
+  <rect x="3" y="3" width="3" height="3" fill="#C8A84B"/>
+  <rect x="6" y="3" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="3" width="3" height="3" fill="#C8A84B"/>
+  <rect x="12" y="3" width="3" height="3" fill="#C8A84B"/>
+  <rect x="15" y="3" width="3" height="3" fill="#C8A84B"/>
+  <!-- Rows 2–3: sides -->
+  <rect x="3" y="6" width="3" height="3" fill="#C8A84B"/>
+  <rect x="15" y="6" width="3" height="3" fill="#C8A84B"/>
+  <rect x="3" y="9" width="3" height="3" fill="#C8A84B"/>
+  <rect x="15" y="9" width="3" height="3" fill="#C8A84B"/>
+  <!-- Row 4: narrowing -->
+  <rect x="6" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="12" width="3" height="3" fill="#C8A84B"/>
+  <rect x="12" y="12" width="3" height="3" fill="#C8A84B"/>
+  <!-- Rows 5–6: stem -->
+  <rect x="9" y="15" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="18" width="3" height="3" fill="#C8A84B"/>
+  <!-- Row 7: base -->
+  <rect x="6" y="21" width="3" height="3" fill="#C8A84B"/>
+  <rect x="9" y="21" width="3" height="3" fill="#C8A84B"/>
+  <rect x="12" y="21" width="3" height="3" fill="#C8A84B"/>
+</svg>
