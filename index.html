@@ -70,6 +70,23 @@
 
         @keyframes bootOut { to { opacity: 0; pointer-events: none; } }
 
+        /* ══ SPARKLE OVERLAY ════════════════════════════════════════ */
+
+        #sparkle-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            opacity: 0;
+        }
+
+        #sparkle-overlay canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
         .boot-logo {
             font-family: var(--pixel-font);
             font-size: 36px;
@@ -572,22 +589,6 @@
             font-weight: normal;
         }
 
-        /* ══ SPARKLE OVERLAY ════════════════════════════════════════ */
-
-        #sparkle-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9000;
-            pointer-events: none;
-            background: var(--screen-bg);
-        }
-
-        #sparkle-canvas {
-            display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-        }
-
         /* ══ RESPONSIVE ═════════════════════════════════════════════ */
 
         @media (max-width: 640px) {
@@ -623,6 +624,11 @@
     <div class="boot-bar-outer">
         <div class="boot-bar-inner"></div>
     </div>
+</div>
+
+<!-- ══ SPARKLE OVERLAY ═════════════════════════════════════════════ -->
+<div id="sparkle-overlay">
+    <canvas id="sparkle-canvas"></canvas>
 </div>
 
 <!-- ══ INVITATION ══════════════════════════════════════════════════ -->
@@ -715,8 +721,6 @@
     </div>
 </div>
 
-<div id="sparkle-overlay"><canvas id="sparkle-canvas"></canvas></div>
-
 <script>
     var tileData = {
         'hp': {
@@ -764,7 +768,7 @@
         document.getElementById('splash').style.display = 'none';
         document.body.classList.remove('pre-boot');
 
-        startSparkleOverlay();
+        setTimeout(startSparkle, 3100);
 
         setTimeout(function () {
             document.getElementById('boot').classList.add('gone');
@@ -798,98 +802,88 @@ function downloadICS() {
 }
 </script>
 
+
+
 <script>
 (function () {
-    var PAL = [
-        [26,  46,  34],
-        [61,  110, 80],
-        [200, 168, 75],
-        [124, 181, 66],
-        [192, 97,  74],
-        [245, 247, 242],
-        [158, 168, 154],
-        [123, 92,  158]
+    var SPX = 8, SGAP = 1, SCELL = SPX + SGAP;
+    var SPAL = [
+        [26, 46, 34], [61, 110, 80], [200, 168, 75], [124, 181, 66],
+        [192, 97, 74], [245, 247, 242], [158, 168, 154], [123, 92, 158]
     ];
 
-    var PX = 8, GAP = 1, CELL = PX + GAP;
-    var COLS, ROWS, buf;
-    var sc   = document.getElementById('sparkle-canvas');
-    var sctx = sc.getContext('2d');
-    var rafId = null;
+    var sCanvas = document.getElementById('sparkle-canvas');
+    var sCtx    = sCanvas.getContext('2d');
+    var sCols, sRows, sBuf, sRAF;
 
-    function init() {
-        COLS = Math.ceil(window.innerWidth  / CELL) + 1;
-        ROWS = Math.ceil(window.innerHeight / CELL) + 1;
-        sc.width  = COLS * CELL - GAP;
-        sc.height = ROWS * CELL - GAP;
-        buf = new Float32Array(COLS * ROWS * 4);
+    function sResize() {
+        sCols = Math.ceil(window.innerWidth  / SCELL) + 1;
+        sRows = Math.ceil(window.innerHeight / SCELL) + 1;
+        sCanvas.width  = sCols * SCELL - SGAP;
+        sCanvas.height = sRows * SCELL - SGAP;
+        sBuf = new Float32Array(sCols * sRows * 4);
     }
 
-    function setPixel(x, y, r, g, b, a) {
-        if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
-        var i = (y * COLS + x) * 4;
-        buf[i] = r; buf[i+1] = g; buf[i+2] = b; buf[i+3] = a;
+    function sSetPixel(x, y, r, g, b, a) {
+        if (x < 0 || x >= sCols || y < 0 || y >= sRows) return;
+        var i = (y * sCols + x) * 4;
+        sBuf[i] = r; sBuf[i+1] = g; sBuf[i+2] = b; sBuf[i+3] = a;
     }
 
-    function fadeAll(f) {
-        for (var i = 3; i < buf.length; i += 4) buf[i] *= f;
-    }
-
-    function step() {
-        fadeAll(0.88);
-        for (var i = 0; i < 22; i++) {
-            var x = Math.floor(Math.random() * COLS);
-            var y = Math.floor(Math.random() * ROWS);
-            var p = PAL[Math.floor(Math.random() * PAL.length)];
-            setPixel(x, y, p[0], p[1], p[2], 0.65 + Math.random() * 0.35);
+    function sStep() {
+        for (var i = 3; i < sBuf.length; i += 4) sBuf[i] *= 0.88;
+        var count = Math.floor(sCols * sRows * 0.008);
+        for (var k = 0; k < count; k++) {
+            var x = Math.floor(Math.random() * sCols);
+            var y = Math.floor(Math.random() * sRows);
+            var p = SPAL[Math.floor(Math.random() * SPAL.length)];
+            sSetPixel(x, y, p[0], p[1], p[2], 0.65 + Math.random() * 0.35);
         }
     }
 
-    function draw() {
-        sctx.fillStyle = '#060e08';
-        sctx.fillRect(0, 0, sc.width, sc.height);
-        for (var y = 0; y < ROWS; y++) {
-            for (var x = 0; x < COLS; x++) {
-                var i = (y * COLS + x) * 4;
-                var a = buf[i + 3];
+    function sDraw() {
+        sCtx.fillStyle = '#060e08';
+        sCtx.fillRect(0, 0, sCanvas.width, sCanvas.height);
+        for (var y = 0; y < sRows; y++) {
+            for (var x = 0; x < sCols; x++) {
+                var i = (y * sCols + x) * 4;
+                var a = sBuf[i + 3];
                 if (a < 0.02) continue;
-                var r = Math.round(buf[i]);
-                var g = Math.round(buf[i+1]);
-                var b = Math.round(buf[i+2]);
-                var px = x * CELL, py = y * CELL;
-                sctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (a * 0.2).toFixed(3) + ')';
-                sctx.fillRect(px - 2, py - 2, PX + 4, PX + 4);
-                sctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(3) + ')';
-                sctx.fillRect(px, py, PX, PX);
+                var r = sBuf[i] | 0, g = sBuf[i+1] | 0, b = sBuf[i+2] | 0;
+                var px = x * SCELL, py = y * SCELL;
+                sCtx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (a * 0.2) + ')';
+                sCtx.fillRect(px - 2, py - 2, SPX + 4, SPX + 4);
+                sCtx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+                sCtx.fillRect(px, py, SPX, SPX);
                 if (a > 0.5) {
-                    sctx.fillStyle = 'rgba(255,255,255,' + (a * 0.12).toFixed(3) + ')';
-                    sctx.fillRect(px, py, 2, 2);
+                    sCtx.fillStyle = 'rgba(255,255,255,' + (a * 0.12) + ')';
+                    sCtx.fillRect(px, py, 2, 2);
                 }
             }
         }
     }
 
-    function loop() {
-        step();
-        draw();
-        rafId = requestAnimationFrame(loop);
-    }
+    window.startSparkle = function () {
+        var overlay = document.getElementById('sparkle-overlay');
+        sResize();
+        overlay.style.display = 'block';
+        overlay.getBoundingClientRect(); // force reflow
+        overlay.style.transition = 'opacity 0.3s';
+        overlay.style.opacity = '1';
 
-    window.startSparkleOverlay = function () {
-        init();
-        loop();
-        // fade out after boot sequence (3200ms) + 1500ms of visible sparkle
+        function tick() { sStep(); sDraw(); sRAF = requestAnimationFrame(tick); }
+        tick();
+
         setTimeout(function () {
-            var ov = document.getElementById('sparkle-overlay');
-            ov.style.transition = 'opacity 0.5s';
-            ov.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.7s';
+            overlay.style.opacity = '0';
             setTimeout(function () {
-                cancelAnimationFrame(rafId);
-                ov.style.display = 'none';
-            }, 500);
-        }, 4700);
+                cancelAnimationFrame(sRAF);
+                overlay.style.display = 'none';
+            }, 700);
+        }, 2000);
     };
-}());
+})();
 </script>
 
 </body>
