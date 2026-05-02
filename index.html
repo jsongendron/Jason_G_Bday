@@ -628,8 +628,6 @@
 <!-- ══ INVITATION ══════════════════════════════════════════════════ -->
 <div class="screen">
 
-    <div id="sparkle-overlay"><canvas id="sparkle-canvas"></canvas></div>
-
     <button id="exit-fs" onclick="document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen && document.webkitExitFullscreen()">[x]</button>
 
     <!-- COVER -->
@@ -716,6 +714,8 @@
         <div class="modal-close">▶ TAP ANYWHERE TO CLOSE ◀</div>
     </div>
 </div>
+
+<div id="sparkle-overlay"><canvas id="sparkle-canvas"></canvas></div>
 
 <script>
     var tileData = {
