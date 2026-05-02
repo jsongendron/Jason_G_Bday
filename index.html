@@ -32,7 +32,8 @@
             font-family: var(--mono);
             background: #000;
             color: var(--parchment);
-            min-height: 100vh;
+            min-height: 100vh;      
+            overflow: hidden;     /* Removes the scrollbar */
         }
 
         /* Scanlines */
@@ -595,7 +596,7 @@
             .screen          { margin: 0; border-radius: 0; min-height: 100dvh; display: flex; flex-direction: column; }
             .cover           { min-height: auto; padding: 24px; flex: 1; display: flex; flex-direction: column; }
             .info-lines      { margin-top: auto; }
-            .hero            { font-size: 24px; }
+            .hero            { font-size: 48px; }
             .cursor          { width: 20px; height: 28px; }
             .divider         { padding-left: 24px; padding-right: 24px; }
             .tile-grid-wrap  { padding-left: 24px; padding-right: 24px; }
