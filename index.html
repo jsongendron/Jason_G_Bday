@@ -35,7 +35,7 @@
             min-height: 100vh;
         }
 
-        /* Scanlines — reduced opacity for crisp text on HiDPI */
+        /* Scanlines */
         body::after {
             content: '';
             position: fixed;
@@ -196,13 +196,6 @@
             50%       { opacity: 0; }
         }
 
-        .hero-sub {
-            font-family: var(--pixel-font);
-            font-size: 11px;
-            color: var(--forest);
-            letter-spacing: 3px;
-        }
-
         /* ══ DIVIDER ════════════════════════════════════════════════ */
 
         .divider {
@@ -216,45 +209,187 @@
             white-space: nowrap;
         }
 
-        /* ══ DETAILS ════════════════════════════════════════════════ */
+        /* ══ TILE GRID ══════════════════════════════════════════════ */
 
-        .details {
-            padding: 8px 48px 36px;
+        .tile-grid-wrap {
+            padding: 0 48px 40px;
         }
 
-        .row {
-            display: grid;
-            grid-template-columns: 88px 1fr;
-            gap: 28px;
-            padding: 20px 0;
-            border-bottom: 2px solid #162218;
-        }
-
-        .row:last-child { border-bottom: none; }
-
-        /* Switched to --meadow for better contrast on dark bg */
-        .row-label {
+        .tile-hint {
             font-family: var(--pixel-font);
-            font-size: 8px;
+            font-size: 6px;
+            color: var(--smoke-green);
+            letter-spacing: 2px;
+            padding: 24px 0 18px;
+            opacity: 0.8;
+            animation: blink 2.5s step-end infinite;
+        }
+
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .tile {
+            background: #0A140D;
+            border: 4px solid var(--forest);
+            box-shadow: 4px 4px 0 var(--deep-canopy);
+            padding: 22px 12px 18px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-height: 114px;
+            position: relative;
+            transition: border-color 0.1s, box-shadow 0.1s, background 0.1s;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .tile:hover,
+        .tile:active {
+            border-color: var(--harvest-gold);
+            box-shadow: 4px 4px 0 var(--deep-canopy), 0 0 18px rgba(200,168,75,0.2);
+            background: #0D1A10;
+        }
+
+        /* FF-style selection cursor, top-left on hover */
+        .tile::after {
+            content: '▶';
+            position: absolute;
+            top: 7px;
+            left: 8px;
+            font-family: var(--pixel-font);
+            font-size: 5px;
+            color: var(--harvest-gold);
+            text-shadow: 0 0 6px var(--harvest-gold);
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .tile:hover::after,
+        .tile:active::after {
+            opacity: 1;
+        }
+
+        .tile-icon {
+            font-size: 24px;
+            color: var(--harvest-gold);
+            text-shadow: 0 0 12px rgba(200,168,75,0.5);
+            line-height: 1;
+        }
+
+        .tile-label {
+            font-family: var(--pixel-font);
+            font-size: 7px;
             color: var(--meadow);
             letter-spacing: 1px;
-            padding-top: 3px;
-            text-shadow: 0 0 5px rgba(124,181,66,0.4);
+            text-align: center;
+            text-shadow: 0 0 4px rgba(124,181,66,0.3);
+        }
+
+        /* ══ MODAL ══════════════════════════════════════════════════ */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 14, 8, 0.88);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-dialog {
+            background: var(--screen-bg);
+            border: 4px solid var(--harvest-gold);
+            box-shadow:
+                inset 0 0 0 3px var(--deep-canopy),
+                8px 8px 0 var(--deep-canopy),
+                0 0 40px rgba(200,168,75,0.15);
+            padding: 28px 28px 20px;
+            max-width: 380px;
+            width: 100%;
+            transform: translateY(16px);
+            transition: transform 0.18s;
+        }
+
+        .modal-overlay.open .modal-dialog {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-family: var(--pixel-font);
+            font-size: 9px;
+            color: var(--harvest-gold);
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+            text-shadow: 0 0 8px rgba(200,168,75,0.5);
             line-height: 1.6;
         }
 
-        .row-value {
+        .modal-rule {
+            height: 2px;
+            background: var(--forest);
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
             font-family: var(--mono);
             font-size: 15px;
             color: var(--parchment);
-            line-height: 1.75;
+            line-height: 1.85;
+            margin-bottom: 24px;
         }
 
-        .row-value .aside {
+        .modal-body strong {
+            color: var(--harvest-gold);
+            font-weight: normal;
+            text-shadow: 0 0 6px rgba(200,168,75,0.4);
+        }
+
+        .modal-body .comment {
+            font-family: var(--pixel-font);
+            font-size: 6px;
+            color: var(--meadow);
+            line-height: 2.6;
             display: block;
-            font-size: 12px;
-            color: var(--lichen);
-            margin-top: 4px;
+            margin-top: 14px;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .modal-body .cal-link {
+            color: var(--harvest-gold);
+            text-decoration: none;
+            text-shadow: 0 0 6px rgba(200,168,75,0.4);
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .modal-body .cal-link:hover { text-decoration: underline; }
+
+        .modal-close {
+            font-family: var(--pixel-font);
+            font-size: 6px;
+            color: var(--smoke-green);
+            text-align: center;
+            letter-spacing: 2px;
+            animation: blink 1.3s step-end infinite;
+            padding-top: 14px;
+            border-top: 2px solid #162218;
         }
 
         /* ══ RSVP TERMINAL ══════════════════════════════════════════ */
@@ -279,56 +414,13 @@
             text-shadow: 0 0 8px rgba(200,168,75,0.5);
         }
 
-        /* Terminal command rows */
-        .term-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-
-        .term-row + .rsvp-line {
-            margin-bottom: 16px;
-        }
-
-        .term-prompt {
-            font-family: var(--pixel-font);
-            font-size: 8px;
-            color: var(--meadow);
-            text-shadow: 0 0 4px rgba(124,181,66,0.6);
-        }
-
-        .term-key {
-            font-family: var(--pixel-font);
-            font-size: 7px;
-            color: var(--smoke-green);
-            letter-spacing: 2px;
-        }
-
         .rsvp-line {
             font-family: var(--mono);
             font-size: 14px;
             color: var(--parchment);
-            padding-left: 18px;
             line-height: 1.6;
         }
 
-        .rsvp-line a {
-            color: var(--meadow);
-            text-decoration: none;
-            text-shadow: 0 0 4px rgba(124,181,66,0.3);
-        }
-
-        .rsvp-line a:hover { text-decoration: underline; }
-
-        .cal-link {
-            color: var(--harvest-gold);
-            text-decoration: none;
-            text-shadow: 0 0 6px rgba(200,168,75,0.4);
-        }
-        .cal-link:hover { text-decoration: underline; }
-
-        /* System status comments */
         .term-comment {
             font-family: var(--pixel-font);
             font-size: 6px;
@@ -363,14 +455,18 @@
         /* ══ RESPONSIVE ═════════════════════════════════════════════ */
 
         @media (max-width: 640px) {
-            .screen    { margin: 0; border-radius: 0; }
-            .cover     { min-height: auto; padding: 24px; }
-.hero      { font-size: 24px; text-align: center; }
-            .cursor    { width: 20px; height: 28px; }
-            .hero-sub  { font-size: 9px; text-align: center; }
-            .divider, .details, .rsvp-wrap, .footer { padding-left: 24px; padding-right: 24px; }
-            .row       { grid-template-columns: 64px 1fr; gap: 12px; }
-            .row-value { font-size: 14px; }
+            .screen          { margin: 0; border-radius: 0; }
+            .cover           { min-height: auto; padding: 24px; }
+            .hero            { font-size: 24px; text-align: center; }
+            .cursor          { width: 20px; height: 28px; }
+            .divider         { padding-left: 24px; padding-right: 24px; }
+            .tile-grid-wrap  { padding-left: 20px; padding-right: 20px; }
+            .tile-grid       { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .tile            { min-height: 96px; padding: 18px 10px 14px; }
+            .tile-icon       { font-size: 20px; }
+            .rsvp-wrap       { padding-left: 24px; padding-right: 24px; }
+            .rsvp-box        { padding: 20px; }
+            .footer          { padding-left: 24px; padding-right: 24px; }
         }
     </style>
 </head>
@@ -392,42 +488,48 @@
     <div class="cover">
         <div class="hi-score">HI-SCORE &nbsp;<b>019,860</b></div>
         <div class="hi-score">PLAYER &nbsp;&nbsp;<b>Jason_G</b></div>
-
         <div class="level-badge">▶ LEVEL 40 UNLOCKED</div>
         <div class="hero">YOU'RE<br>INVITED<span class="cursor"></span></div>
-
     </div>
 
     <!-- DIVIDER -->
     <div class="divider">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
 
-    <!-- DETAILS -->
-    <div class="details">
-        <div class="row">
-            <div class="row-label">WHEN</div>
-            <div class="row-value">Saturday 27 June · from 6pm</div>
-        </div>
-        <div class="row">
-            <div class="row-label">SECTOR</div>
-            <div class="row-value">
-                Carlton
+    <!-- TILE GRID -->
+    <div class="tile-grid-wrap">
+        <div class="tile-hint">▶ SELECT A TILE TO VIEW DETAILS ◀</div>
+        <div class="tile-grid">
+
+            <div class="tile" data-tile="when">
+                <div class="tile-icon">◆</div>
+                <div class="tile-label">WHEN</div>
             </div>
-        </div>
-        <div class="row">
-            <div class="row-label">HP</div>
-            <div class="row-value">Sweet &amp; savoury supply — host-stocked. Eat freely.</div>
-        </div>
-        <div class="row">
-            <div class="row-label">MP</div>
-            <div class="row-value">Red, white &amp; sparkling potions — host-stocked. Drink freely.</div>
-        </div>
-        <div class="row">
-            <div class="row-label">SKIN</div>
-            <div class="row-value">Casual. Optional side quest: wear a nod to your favourite old game, a pin, a cap, a tee, whatever.</div>
-        </div>
-        <div class="row">
-            <div class="row-label">SYNC</div>
-            <div class="row-value"><a class="cal-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Jason%27s+40th+Birthday&dates=20260627T180000%2F20260628T000000&details=Jason+turns+40%21+RSVP+for+location+details.&location=Carlton%2C+Melbourne" target="_blank">[ ADD TO CALENDAR ]</a></div>
+
+            <div class="tile" data-tile="sector">
+                <div class="tile-icon">▲</div>
+                <div class="tile-label">SECTOR</div>
+            </div>
+
+            <div class="tile" data-tile="hp">
+                <div class="tile-icon">♥</div>
+                <div class="tile-label">HP</div>
+            </div>
+
+            <div class="tile" data-tile="mp">
+                <div class="tile-icon">◇</div>
+                <div class="tile-label">MP</div>
+            </div>
+
+            <div class="tile" data-tile="skin">
+                <div class="tile-icon">★</div>
+                <div class="tile-label">SKIN</div>
+            </div>
+
+            <div class="tile" data-tile="sync">
+                <div class="tile-icon">▶</div>
+                <div class="tile-label">SYNC</div>
+            </div>
+
         </div>
     </div>
 
@@ -438,9 +540,7 @@
     <div class="rsvp-wrap">
         <div class="rsvp-box">
             <div class="rsvp-head">▶ RSVP_TERMINAL</div>
-
             <div class="rsvp-line">RSVP by responding to the SMS received.</div>
-
             <div class="term-comment">
                 // STATUS &nbsp;: AWAITING_CONFIRMATION<br>
                 // COORDS &nbsp;: [ENCRYPTED] — DECRYPTED ON CONFIRM
@@ -448,11 +548,70 @@
         </div>
     </div>
 
-
 </div><!-- /screen -->
 
+<!-- ══ MODAL ════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-dialog">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-rule"></div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-close">▶ TAP ANYWHERE TO CLOSE ◀</div>
+    </div>
+</div>
+
 <script>
-    setTimeout(function () {
+    var tileData = {
+        'when': {
+            title: '◆ WHEN',
+            html:  '<strong>Saturday 27 June</strong><br>from 6pm'
+        },
+        'sector': {
+            title: '▲ SECTOR',
+            html:  'Carlton<br><br><span class="comment">// COORDS &nbsp;: [ENCRYPTED]<br>// DECRYPTED ON CONFIRM</span>'
+        },
+        'hp': {
+            title: '♥ HP',
+            html:  'Sweet &amp; savoury supply — host-stocked.<br><br>Eat freely.'
+        },
+        'mp': {
+            title: '◇ MP',
+            html:  'Red, white &amp; sparkling potions — host-stocked.<br><br>Drink freely.'
+        },
+        'skin': {
+            title: '★ SKIN',
+            html:  'Casual.<br><br>Optional side quest: wear a nod to your favourite old game — a pin, a cap, a tee, whatever.'
+        },
+        'sync': {
+            title: '▶ SYNC',
+            html:  'Save the date.<br><br><a class="cal-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Jason%27s+40th+Birthday&dates=20260627T180000%2F20260628T000000&details=Jason+turns+40%21+RSVP+for+location+details.&location=Carlton%2C+Melbourne" target="_blank">[ ADD TO CALENDAR ]</a>'
+        }
+    };
+
+    var overlay    = document.getElementById('modalOverlay');
+    var modalTitle = document.getElementById('modalTitle');
+    var modalBody  = document.getElementById('modalBody');
+
+    document.querySelectorAll('.tile').forEach(function(tile) {
+        tile.addEventListener('click', function() {
+            var id   = this.dataset.tile;
+            var data = tileData[id];
+            if (!data) return;
+            modalTitle.textContent = data.title;
+            modalBody.innerHTML    = data.html;
+            overlay.classList.add('open');
+        });
+    });
+
+    overlay.addEventListener('click', function() {
+        overlay.classList.remove('open');
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') overlay.classList.remove('open');
+    });
+
+    setTimeout(function() {
         document.getElementById('boot').classList.add('gone');
     }, 3900);
 </script>
