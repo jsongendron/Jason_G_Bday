@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Pixel Grid</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            gap: 16px;
+        }
+
+        .bezel {
+            background: #060e08;
+            padding: 20px;
+            border-radius: 10px;
+            border: 4px solid #1a2e22;
+            box-shadow:
+                0 0 0 4px #060e08,
+                0 0 0 8px #c8a84b,
+                0 0 0 12px #060e08,
+                0 0 60px #3d6e50,
+                0 0 120px rgba(61, 110, 80, 0.35);
+        }
+
+        .screen-wrap {
+            position: relative;
+            display: block;
+            line-height: 0;
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        /* CRT scanline overlay */
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.22) 2px,
+                rgba(0, 0, 0, 0.22) 4px
+            );
+            pointer-events: none;
+        }
+
+        /* Vignette */
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                ellipse at 50% 50%,
+                transparent 60%,
+                rgba(0, 0, 0, 0.5) 100%
+            );
+            pointer-events: none;
+        }
+
+        /* Mode label */
+        .mode-label {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #3d6e50;
+            text-transform: uppercase;
+            opacity: 0.7;
+            height: 16px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: transparent;
+            color: #3d6e50;
+            border: 2px solid #1a2e22;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        button:hover {
+            color: #c8a84b;
+            border-color: #c8a84b;
+        }
+
+        button.active {
+            color: #c8a84b;
+            border-color: #c8a84b;
+            box-shadow: 0 0 8px rgba(200, 168, 75, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="bezel">
+    <div class="screen-wrap">
+        <canvas id="c"></canvas>
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
+    </div>
+</div>
+
+<div class="mode-label" id="modeLabel">PLASMA</div>
+
+<div class="controls">
+    <button id="btn-plasma"  class="active" onclick="setMode(0)">PLASMA</button>
+    <button id="btn-rain"               onclick="setMode(1)">RAIN</button>
+    <button id="btn-sparkle"            onclick="setMode(2)">SPARKLE</button>
+    <button id="btn-wave"               onclick="setMode(3)">WAVE</button>
+    <button id="btn-jungle"            onclick="setMode(4)">JUNGLE</button>
+    <button id="btn-auto"    class="active" onclick="toggleAuto()">AUTO</button>
+</div>
+
+<script>
+    // ── Config ────────────────────────────────────────────────────────
+    const COLS = 64, ROWS = 48, PX = 8, GAP = 1, CELL = PX + GAP;
+
+    const canvas = document.getElementById('c');
+    canvas.width  = COLS * CELL - GAP;
+    canvas.height = ROWS * CELL - GAP;
+    const ctx = canvas.getContext('2d');
+
+    // Jason's arcade palette [r, g, b]
+    const PAL = [
+        [26,  46,  34],   // deep-canopy
+        [61,  110, 80],   // forest
+        [200, 168, 75],   // harvest-gold
+        [124, 181, 66],   // meadow
+        [192, 97,  74],   // terracotta
+        [245, 247, 242],  // parchment
+        [158, 168, 154],  // lichen
+        [123, 92,  158],  // wildflower
+    ];
+
+    // Float pixel buffer: RGBA per pixel
+    const buf = new Float32Array(COLS * ROWS * 4);
+
+    // ── Buffer helpers ────────────────────────────────────────────────
+    function setPixel(x, y, r, g, b, a) {
+        if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
+        const i = (y * COLS + x) * 4;
+        buf[i] = r; buf[i+1] = g; buf[i+2] = b; buf[i+3] = a;
+    }
+
+    function fadeAll(factor) {
+        for (let i = 3; i < buf.length; i += 4) buf[i] *= factor;
+    }
+
+    function clearAll() { buf.fill(0); }
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    // ── Rain ─────────────────────────────────────────────────────────
+    const drops = Array.from({length: COLS}, () => ({
+        y:   Math.random() * ROWS,
+        spd: 0.25 + Math.random() * 0.65,
+        len: 5 + Math.floor(Math.random() * 10),
+    }));
+
+    function stepRain(dt) {
+        clearAll();
+        for (let x = 0; x < COLS; x++) {
+            const d = drops[x];
+            d.y += d.spd * (dt / 16);
+            if (d.y >= ROWS + d.len) {
+                d.y = -d.len;
+                d.spd = 0.25 + Math.random() * 0.65;
+                d.len = 5 + Math.floor(Math.random() * 10);
+            }
+
+            const head = Math.floor(d.y);
+
+            // Head: near-white phosphor burst
+            if (head >= 0 && head < ROWS) setPixel(x, head, 245, 247, 242, 1);
+
+            // Trail: gold → forest green fade
+            for (let i = 1; i <= d.len; i++) {
+                const ty = head - i;
+                if (ty < 0 || ty >= ROWS) continue;
+                const t = 1 - i / (d.len + 1);
+                const fade = t * t;
+                setPixel(x, ty,
+                    lerp(200, 61,  fade),
+                    lerp(168, 110, fade),
+                    lerp(75,  80,  fade),
+                    fade
+                );
+            }
+        }
+    }
+
+    // ── Plasma ───────────────────────────────────────────────────────
+    function stepPlasma(ts) {
+        const s = ts / 800;
+        for (let y = 0; y < ROWS; y++) {
+            for (let x = 0; x < COLS; x++) {
+                const cx = x / COLS, cy = y / ROWS;
+                const v =
+                    Math.sin(cx * 9  + s)       +
+                    Math.sin(cy * 7  + s * 0.9) +
+                    Math.sin((cx + cy) * 8 + s * 1.2) +
+                    Math.sin(Math.sqrt((cx-0.5)**2 + (cy-0.5)**2) * 14 - s * 0.8);
+
+                const norm = (v + 4) / 8; // clamp 0..1
+
+                let r, g, b;
+                if (norm < 0.33) {
+                    const t = norm / 0.33;
+                    r = lerp(26,  200, t);
+                    g = lerp(46,  168, t);
+                    b = lerp(34,  75,  t);
+                } else if (norm < 0.66) {
+                    const t = (norm - 0.33) / 0.33;
+                    r = lerp(200, 124, t);
+                    g = lerp(168, 181, t);
+                    b = lerp(75,  66,  t);
+                } else {
+                    const t = (norm - 0.66) / 0.34;
+                    r = lerp(124, 61,  t);
+                    g = lerp(181, 180, t);
+                    b = lerp(66,  120, t);
+                }
+
+                const bright = 0.45 + norm * 0.55;
+                setPixel(x, y, r * bright, g * bright, b * bright, 1);
+            }
+        }
+    }
+
+    // ── Sparkle ──────────────────────────────────────────────────────
+    function stepSparkle() {
+        fadeAll(0.88);
+        for (let i = 0; i < 22; i++) {
+            const x = Math.floor(Math.random() * COLS);
+            const y = Math.floor(Math.random() * ROWS);
+            const p = PAL[Math.floor(Math.random() * PAL.length)];
+            setPixel(x, y, p[0], p[1], p[2], 0.65 + Math.random() * 0.35);
+        }
+    }
+
+    // ── Wave ─────────────────────────────────────────────────────────
+    function stepWave(ts) {
+        const s = ts / 1000;
+        for (let y = 0; y < ROWS; y++) {
+            for (let x = 0; x < COLS; x++) {
+                const phase = x * 0.16 + y * 0.11 - s * 2.0;
+                const w = (Math.sin(phase) + Math.sin(phase * 2.2 + 0.7) + 2) / 4; // 0..1
+
+                // Gold ↔ forest green ↔ meadow
+                let r, g, b;
+                if (w < 0.5) {
+                    const t = w / 0.5;
+                    r = lerp(61,  200, t);
+                    g = lerp(110, 168, t);
+                    b = lerp(80,  75,  t);
+                } else {
+                    const t = (w - 0.5) / 0.5;
+                    r = lerp(200, 124, t);
+                    g = lerp(168, 181, t);
+                    b = lerp(75,  66,  t);
+                }
+
+                const bright = 0.35 + w * 0.65;
+                setPixel(x, y, r * bright, g * bright, b * bright, 1);
+            }
+        }
+    }
+
+    // ── Jungle ───────────────────────────────────────────────────────
+
+    // Leaf pixel offsets [dx, dy] from stem tip. Negative dy = upward.
+    const LEAF_SHAPES = [
+        [[0,0],[1,0],[0,-1],[1,-1],[0,-2]],                          // A: oval blade
+        [[0,0],[-1,-1],[0,-1],[1,-1],[0,-2]],                        // B: round
+        [[-1,0],[0,0],[1,0],[-1,-1],[0,-1],[1,-1],[0,-2]],           // C: wide tropical
+        [[0,0],[0,-1],[0,-2],[0,-3],[-1,-2],[1,-1]],                 // D: tall pointed
+    ];
+
+    const JUNGLE_PLANTS = [
+        // background layer (dim, drawn first so foreground sits on top)
+        { x:7,  y:47, h:7,  s:1, col:[61,110,80],  phase:0.4,  freq:0.50, amp:1.2, a:0.32 },
+        { x:19, y:47, h:9,  s:3, col:[61,110,80],  phase:2.2,  freq:0.45, amp:1.0, a:0.32 },
+        { x:37, y:47, h:6,  s:0, col:[61,110,80],  phase:4.1,  freq:0.55, amp:1.1, a:0.32 },
+        { x:53, y:47, h:8,  s:1, col:[61,110,80],  phase:1.8,  freq:0.50, amp:1.0, a:0.32 },
+        // foreground layer
+        { x:2,  y:47, h:9,  s:1, col:[124,181,66], phase:0.0,  freq:0.70, amp:1.8, a:0.92 },
+        { x:12, y:47, h:14, s:2, col:[61,110,80],  phase:1.5,  freq:0.55, amp:2.2, a:0.92 },
+        { x:23, y:47, h:8,  s:3, col:[124,181,66], phase:3.0,  freq:0.85, amp:1.6, a:0.92 },
+        { x:31, y:47, h:12, s:0, col:[200,168,75], phase:0.8,  freq:0.60, amp:2.0, a:0.92 },
+        { x:42, y:47, h:10, s:1, col:[61,110,80],  phase:2.4,  freq:0.75, amp:1.8, a:0.92 },
+        { x:50, y:47, h:16, s:2, col:[124,181,66], phase:5.0,  freq:0.50, amp:2.3, a:0.92 },
+        { x:60, y:47, h:9,  s:3, col:[61,110,80],  phase:3.8,  freq:0.70, amp:1.8, a:0.92 },
+    ];
+
+    function stepJungle(ts) {
+        const s = ts / 1000;
+        clearAll();
+
+        for (const p of JUNGLE_PLANTS) {
+            const sway = Math.sin(s * p.freq + p.phase) * p.amp;
+
+            // Stem — sway increases toward the tip
+            for (let i = 0; i <= p.h; i++) {
+                const prog = i / p.h;
+                const sx = Math.round(p.x + sway * prog);
+                const sy = p.y - i;
+                setPixel(sx, sy, 40, 68, 44, p.a * 0.75);
+            }
+
+            // Leaf cluster at tip
+            const tipX = Math.round(p.x + sway);
+            const tipY = p.y - p.h;
+            const shade = 1.0 + (sway / p.amp) * 0.15; // brighter when leaning into "light"
+
+            for (const [dx, dy] of LEAF_SHAPES[p.s]) {
+                setPixel(tipX + dx, tipY + dy,
+                    Math.min(255, Math.round(p.col[0] * shade)),
+                    Math.min(255, Math.round(p.col[1] * shade)),
+                    Math.min(255, Math.round(p.col[2] * shade)),
+                    p.a
+                );
+            }
+        }
+    }
+
+    // ── Render ───────────────────────────────────────────────────────
+    function draw() {
+        ctx.fillStyle = '#060e08';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let y = 0; y < ROWS; y++) {
+            for (let x = 0; x < COLS; x++) {
+                const i = (y * COLS + x) * 4;
+                const a = buf[i + 3];
+                if (a < 0.02) continue;
+
+                const r = Math.round(buf[i]);
+                const g = Math.round(buf[i+1]);
+                const b = Math.round(buf[i+2]);
+                const px = x * CELL, py = y * CELL;
+
+                // Soft glow bloom
+                ctx.fillStyle = `rgba(${r},${g},${b},${(a * 0.2).toFixed(3)})`;
+                ctx.fillRect(px - 2, py - 2, PX + 4, PX + 4);
+
+                // Core pixel
+                ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
+                ctx.fillRect(px, py, PX, PX);
+
+                // Phosphor highlight dot (top-left)
+                if (a > 0.5) {
+                    ctx.fillStyle = `rgba(255,255,255,${(a * 0.12).toFixed(3)})`;
+                    ctx.fillRect(px, py, 2, 2);
+                }
+            }
+        }
+    }
+
+    // ── Mode switching ───────────────────────────────────────────────
+    const MODES      = ['plasma', 'rain', 'sparkle', 'wave', 'jungle'];
+    const DURATIONS  = [10000, 9000, 7000, 9000, 11000]; // ms each
+    const BTN_IDS    = ['btn-plasma', 'btn-rain', 'btn-sparkle', 'btn-wave', 'btn-jungle'];
+
+    let modeIdx  = 0;
+    let autoMode = true;
+    let elapsed  = 0;
+    let lastTs   = null;
+    let transitioning = false;
+    let transTimer    = 0;
+    const TRANS_DUR   = 350;
+
+    function setMode(idx) {
+        if (modeIdx === idx && !transitioning) return;
+        modeIdx = idx;
+        elapsed = 0;
+        transitioning = true;
+        transTimer = 0;
+        updateButtons();
+        document.getElementById('modeLabel').textContent = MODES[idx].toUpperCase();
+    }
+
+    function toggleAuto() {
+        autoMode = !autoMode;
+        document.getElementById('btn-auto').classList.toggle('active', autoMode);
+    }
+
+    function updateButtons() {
+        BTN_IDS.forEach((id, i) => {
+            document.getElementById(id).classList.toggle('active', i === modeIdx);
+        });
+    }
+
+    // ── Animation loop ───────────────────────────────────────────────
+    function tick(ts) {
+        if (lastTs === null) lastTs = ts;
+        const dt = Math.min(ts - lastTs, 50); // cap at 50ms to avoid jumps
+        lastTs = ts;
+
+        // Transition flash
+        if (transitioning) {
+            transTimer += dt;
+            fadeAll(0.6);
+            if (transTimer >= TRANS_DUR) transitioning = false;
+            draw();
+            requestAnimationFrame(tick);
+            return;
+        }
+
+        // Auto-advance mode
+        if (autoMode) {
+            elapsed += dt;
+            if (elapsed >= DURATIONS[modeIdx]) {
+                const next = (modeIdx + 1) % MODES.length;
+                setMode(next);
+                requestAnimationFrame(tick);
+                return;
+            }
+        }
+
+        // Run current effect
+        switch (MODES[modeIdx]) {
+            case 'plasma':  stepPlasma(ts);  break;
+            case 'rain':    stepRain(dt);    break;
+            case 'sparkle': stepSparkle();   break;
+            case 'wave':    stepWave(ts);    break;
+            case 'jungle':  stepJungle(ts);  break;
+        }
+
+        draw();
+        requestAnimationFrame(tick);
+    }
+
+    updateButtons();
+    requestAnimationFrame(tick);
+</script>
+</body>
+</html>
