@@ -993,18 +993,12 @@ function downloadICS() {
 
 <script>
 function play8BitBirthday() {
-    var AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-
-    var ctx    = new AudioCtx();
-    ctx.resume();
-
-    var master = ctx.createGain();
-    master.gain.value = 0.08;
-    master.connect(ctx.destination);
-
     var SVG_VOL  = '<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24"><path fill="currentColor" d="M11 2h2v20h-2v-2H9v-2h2V6H9V4h2zM7 8V6h2v2zm0 8H3V8h4v2H5v4h2zm0 0v2h2v-2zm10-6h-2v4h2zm2-2h2v8h-2zm0 8v2h-4v-2zm0-10v2h-4V6z"/></svg>';
     var SVG_MUTE = '<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24"><path fill="currentColor" d="M13 2h-2v2H9v2H7v2H3v8h4v2h2v2h2v2h2zM9 18v-2H7v-2H5v-4h2V8h2V6h2v12zm10-6.777h-2v-2h-2v2h2v2h-2v2h2v-2h2v2h2v-2h-2zm0 0h2v-2h-2z"/></svg>';
+
+    var audio = new Audio('DuckTales_NES_-_Moon_Theme-646300-mobiles24.mp3');
+    audio.loop = true;
+    audio.volume = 0.5;
 
     var isMuted = false;
     var btn = document.getElementById('mute-btn');
@@ -1013,56 +1007,13 @@ function play8BitBirthday() {
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
             isMuted = !isMuted;
-            master.gain.setTargetAtTime(isMuted ? 0 : 0.08, ctx.currentTime, 0.05);
+            audio.muted = isMuted;
+            if (!isMuted && audio.paused) { audio.play().catch(function(){}); }
             btn.innerHTML = isMuted ? SVG_VOL + ' UNMUTE' : SVG_MUTE + ' MUTE';
         });
     }
 
-    var beat = 60 / 140; // seconds per beat at 140 BPM
-
-    // [freq_hz, beats]  — 0 = rest
-    var song = [
-        [392, 0.75], [392, 0.25], [440, 1], [392, 1], [523, 1], [494, 2],          // Hap-py BIRTH-day TO you
-        [0, 0.5],
-        [392, 0.75], [392, 0.25], [440, 1], [392, 1], [587, 1], [523, 2],          // Hap-py BIRTH-day TO you
-        [0, 0.5],
-        [392, 0.75], [392, 0.25], [784, 1], [659, 1], [523, 1], [494, 1], [440, 2],// Hap-py BIRTH-day DEAR JA-son
-        [0, 0.5],
-        [698, 0.75], [698, 0.25], [659, 1], [523, 1], [587, 1], [523, 3],          // Hap-py BIRTH-day TO youuuu
-        [0, 1.5]                                                                    // gap before loop
-    ];
-
-    function schedulePlay(startTime) {
-        var t = startTime;
-        for (var i = 0; i < song.length; i++) {
-            var freq = song[i][0];
-            var dur  = song[i][1] * beat;
-            if (freq > 0) {
-                var osc  = ctx.createOscillator();
-                var gain = ctx.createGain();
-                osc.type = 'square';
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0, t);
-                gain.gain.linearRampToValueAtTime(1, t + 0.012);
-                gain.gain.setValueAtTime(1, t + dur * 0.82);
-                gain.gain.linearRampToValueAtTime(0, t + dur);
-                osc.connect(gain);
-                gain.connect(master);
-                osc.start(t);
-                osc.stop(t + dur + 0.02);
-            }
-            t += dur;
-        }
-        return t;
-    }
-
-    function loop(startTime) {
-        var endTime = schedulePlay(startTime);
-        var msAhead = (endTime - ctx.currentTime - 0.3) * 1000;
-        setTimeout(function() { loop(endTime); }, Math.max(0, msAhead));
-    }
-
-    loop(ctx.currentTime + 0.1);
+    audio.play().catch(function() {});
 }
 </script>
 
