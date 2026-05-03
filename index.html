@@ -104,12 +104,7 @@
             transition: opacity 1s ease-out;
         }
 
-        @keyframes selfie-rock {
-            0%, 100% { transform: translateX(-50%) rotate(15deg); }
-            50%       { transform: translateX(-50%) rotate(-15deg); }
-        }
-
-        #pixel-selfie.visible { opacity: 0.32; animation: selfie-rock 4s ease-in-out infinite; }
+        #pixel-selfie.visible { opacity: 0.32; }
 
         .boot-logo {
             font-family: var(--pixel-font);
@@ -654,12 +649,7 @@
                 pointer-events: auto;
                 display: block;
             }
-            @keyframes selfie-rock-mobile {
-                0%, 100% { transform: rotate(15deg); }
-                50%       { transform: rotate(-15deg); }
-            }
-
-            #pixel-selfie.visible { opacity: 0.8; animation: selfie-rock-mobile 4s ease-in-out infinite; }
+            #pixel-selfie.visible { opacity: 0.8; }
         }
     </style>
 </head>
@@ -701,7 +691,7 @@
 
         <!-- PIXEL SELFIE — flex item on mobile, fixed overlay on desktop -->
         <div class="selfie-wrap">
-            <img id="pixel-selfie" src="Pixel%20selfie%20v2.svg" alt="">
+            <img id="pixel-selfie" src="PixelSelfieQuandrant1.svg" alt="">
         </div>
 
         <div class="info-lines">
@@ -829,7 +819,21 @@
         setTimeout(startSparkle, 3100);
 
         setTimeout(function () {
-            document.getElementById('pixel-selfie').classList.add('visible');
+            var selfie = document.getElementById('pixel-selfie');
+            selfie.classList.add('visible');
+            var frames = [
+                'PixelSelfieQuandrant1.svg',
+                'PixelSelfieQuandrant2.svg',
+                'PixelSelfieQuandrant3.svg',
+                'PixelSelfieQuandrant4.svg',
+                'PixelSelfieQuandrant3.svg',
+                'PixelSelfieQuandrant2.svg'
+            ];
+            var fi = 0;
+            setInterval(function () {
+                fi = (fi + 1) % frames.length;
+                selfie.src = frames[fi];
+            }, 700);
         }, 3200);
 
         setTimeout(function () {
