@@ -1,7 +1,7 @@
 # Jason's 40th Birthday Invite — Project Context
 
 ## What this is
-A self-contained HTML invite (`index.html`) sent to guests as a file they open on their phone. No server, no backend — pure HTML/CSS/JS.
+An HTML invite (`index.html`) hosted on GitHub Pages and shared with guests as a URL they open on their phone. No server, no backend — pure HTML/CSS/JS. External assets (SVG pixel selfies) live in the same repo folder and load via relative paths.
 
 ## Party details
 - **Who:** Jason Gendron (Jason_G), turning 40
