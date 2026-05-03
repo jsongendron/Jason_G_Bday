@@ -49,7 +49,7 @@
                 rgba(0,0,0,0.10) 4px
             );
             pointer-events: none;
-            z-index: 9998;
+            z-index: 20001;
         }
 
         /* ══ BOOT OVERLAY ═══════════════════════════════════════════ */
@@ -110,7 +110,10 @@
             font-family: var(--pixel-font);
             font-size: 36px;
             color: var(--harvest-gold);
-            text-shadow: 0 0 20px var(--harvest-gold), 0 0 50px rgba(200,168,75,0.4);
+            text-shadow:
+                0 0 10px var(--harvest-gold),
+                0 0 30px rgba(200,168,75,0.5),
+                0 0 60px rgba(200,168,75,0.2);
             animation: flicker 0.35s step-end 0.3s 3;
         }
 
@@ -171,6 +174,10 @@
             font-size: 16px;
             color: var(--harvest-gold);
             letter-spacing: 2px;
+            text-shadow:
+                0 0 10px var(--harvest-gold),
+                0 0 30px rgba(200,168,75,0.5),
+                0 0 60px rgba(200,168,75,0.2);
             transition: border-color 0.1s, box-shadow 0.1s, background 0.1s;
             -webkit-tap-highlight-color: transparent;
         }
